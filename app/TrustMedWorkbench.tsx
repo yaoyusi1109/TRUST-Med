@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import scenarios from "@/data/scenarios.json";
 import leaderboard from "@/data/leaderboard.json";
 import type { LeaderboardData, Scenario } from "@/types";
@@ -77,101 +77,8 @@ const NAV_ITEMS: { id: SectionId; label: string; Icon: () => React.ReactElement 
   { id: "search",      label: "Search",      Icon: IconSearch   },
 ];
 
-const MAP_SITES = [
-  {
-    city: "Baltimore",
-    institution: "Johns Hopkins Medicine",
-    country: "United States",
-    clinicians: 18,
-    x: 27,
-    y: 24,
-    role: "Research lead"
-  },
-  {
-    city: "Boston",
-    institution: "Academic medical center",
-    country: "United States",
-    clinicians: 6,
-    x: 28,
-    y: 22,
-    role: "Prospective collaborator"
-  },
-  {
-    city: "San Francisco",
-    institution: "Clinical AI safety group",
-    country: "United States",
-    clinicians: 5,
-    x: 15,
-    y: 26,
-    role: "Prospective collaborator"
-  },
-  {
-    city: "Nanjing",
-    institution: "Nanjing University",
-    country: "China",
-    clinicians: 21,
-    x: 79,
-    y: 28,
-    role: "Research partner"
-  },
-  {
-    city: "Shanghai",
-    institution: "Tertiary hospital network",
-    country: "China",
-    clinicians: 9,
-    x: 79,
-    y: 30,
-    role: "Prospective collaborator"
-  },
-  {
-    city: "Beijing",
-    institution: "Clinical informatics group",
-    country: "China",
-    clinicians: 7,
-    x: 77,
-    y: 24,
-    role: "Prospective collaborator"
-  }
-];
-
-const WORLD_REGIONS = [
-  {
-    name: "North America",
-    path: "M8 17 L14 11 L24 9 L32 13 L35 20 L30 26 L24 27 L20 31 L14 30 L10 25 L5 23 Z"
-  },
-  {
-    name: "South America",
-    path: "M28 31 L34 34 L36 42 L32 52 L27 49 L25 41 L23 35 Z"
-  },
-  {
-    name: "Greenland",
-    path: "M28 4 L36 3 L42 7 L39 11 L30 11 L25 8 Z"
-  },
-  {
-    name: "Europe",
-    path: "M45 15 L52 11 L59 14 L58 20 L51 22 L44 20 Z"
-  },
-  {
-    name: "Africa",
-    path: "M49 23 L59 22 L65 31 L61 43 L53 46 L47 38 L45 29 Z"
-  },
-  {
-    name: "Asia",
-    path: "M59 13 L75 10 L91 17 L94 27 L86 33 L75 31 L66 25 L58 20 Z"
-  },
-  {
-    name: "Australia",
-    path: "M78 38 L88 37 L94 43 L91 49 L81 49 L76 44 Z"
-  },
-  {
-    name: "Japan",
-    path: "M87 24 L89 25 L90 28 L88 30 L86 28 Z"
-  },
-  {
-    name: "United Kingdom",
-    path: "M46 13 L48 12 L49 15 L47 16 Z"
-  }
-];
+const MAP_MY_VISITORS_SRC =
+  "https://mapmyvisitors.com/globe.js?d=6QS0IJczqQHkuARz_7Z5U-YsnPMKXa24vsGm3ija3UA";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -274,14 +181,6 @@ export function TrustMedWorkbench() {
 // ── Clinical Map panel ─────────────────────────────────────────────────────
 
 function ClinicalMapPanel() {
-  const totalClinicians = MAP_SITES.reduce((sum, site) => sum + site.clinicians, 0);
-  const usClinicians = MAP_SITES
-    .filter((site) => site.country === "United States")
-    .reduce((sum, site) => sum + site.clinicians, 0);
-  const chinaClinicians = MAP_SITES
-    .filter((site) => site.country === "China")
-    .reduce((sum, site) => sum + site.clinicians, 0);
-
   return (
     <section>
       <div className="mb-5 border-b border-line pb-5">
@@ -307,122 +206,30 @@ function ClinicalMapPanel() {
                 TRUST-Med collaboration footprint
               </h3>
               <p className="mt-1 text-sm text-muted">
-                Real-world basemap with illustrative collaborator highlights.
+                Live globe widget powered by MapMyVisitors.
               </p>
             </div>
             <span className="border border-line bg-background px-3 py-1 font-mono text-xs uppercase tracking-[0.12em] text-muted">
-              Demo map
+              Live visitor map
             </span>
           </div>
 
-          <div className="relative mt-5 overflow-hidden border border-line bg-[#F7F3EA]">
-            <svg
-              viewBox="0 0 100 56"
-              role="img"
-              aria-label="Map showing TRUST-Med clinical collaborators in the United States and China"
-              className="h-[420px] w-full"
-            >
-              <rect width="100" height="56" fill="#F7F3EA" />
-              {[20, 40, 60, 80].map((x) => (
-                <line
-                  key={`longitude-${x}`}
-                  x1={x}
-                  y1="3"
-                  x2={x}
-                  y2="53"
-                  stroke="#E5E0D5"
-                  strokeWidth="0.16"
-                />
-              ))}
-              {[14, 28, 42].map((y) => (
-                <line
-                  key={`latitude-${y}`}
-                  x1="3"
-                  y1={y}
-                  x2="97"
-                  y2={y}
-                  stroke="#E5E0D5"
-                  strokeWidth="0.16"
-                />
-              ))}
-              <path
-                d="M2 28 C16 22 28 22 41 27 S63 34 78 27 S91 22 98 26"
-                fill="none"
-                stroke="#E5E0D5"
-                strokeWidth="0.35"
-              />
-              {WORLD_REGIONS.map((region) => (
-                <path
-                  key={region.name}
-                  d={region.path}
-                  fill="#E8E1D2"
-                  stroke="#D5CBB8"
-                  strokeLinejoin="round"
-                  strokeWidth="0.38"
-                />
-              ))}
-              <path
-                d="M27 24 C39 11 62 12 79 28"
-                fill="none"
-                stroke="#A6192E"
-                strokeDasharray="1.4 1.2"
-                strokeLinecap="round"
-                strokeWidth="0.75"
-              />
-              <path
-                d="M15 26 C35 8 62 8 79 28"
-                fill="none"
-                stroke="#002D72"
-                strokeOpacity="0.38"
-                strokeLinecap="round"
-                strokeWidth="0.55"
-              />
-
-              {MAP_SITES.map((site) => (
-                <g key={`${site.city}-${site.institution}`}>
-                  <circle
-                    cx={site.x}
-                    cy={site.y}
-                    r={Math.max(1.6, Math.min(3.2, site.clinicians / 6))}
-                    fill={site.role.includes("Research") ? "#A6192E" : "#002D72"}
-                    opacity="0.18"
-                  />
-                  <circle
-                    cx={site.x}
-                    cy={site.y}
-                    r="0.85"
-                    fill={site.role.includes("Research") ? "#A6192E" : "#002D72"}
-                  />
-                </g>
-              ))}
-
-              <text x="12" y="13" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
-                United States
-              </text>
-              <text x="76" y="13" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
-                China
-              </text>
-              <text x="43" y="17" fill="#A6192E" fontSize="2" fontFamily="monospace">
-                JHU ⇄ NJU
-              </text>
-            </svg>
-          </div>
+          <MapMyVisitorsGlobe />
         </div>
 
         <aside className="space-y-4">
-          <div className="grid grid-cols-3 border border-line bg-paper">
-            {[
-              ["Sites", MAP_SITES.length],
-              ["Clinicians", totalClinicians],
-              ["Countries", 2]
-            ].map(([label, value]) => (
-              <div key={label} className="border-r border-line p-4 last:border-r-0">
-                <p className="font-display text-3xl text-primary">{value}</p>
-                <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                  {label}
-                </p>
-              </div>
-            ))}
+          <div className="border border-line bg-paper p-4">
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
+              Widget source
+            </p>
+            <h3 className="mt-2 font-display text-2xl text-primary">
+              MapMyVisitors Globe
+            </h3>
+            <p className="mt-3 leading-7 text-muted">
+              This panel now uses the real MapMyVisitors JavaScript widget you
+              created, so geography is rendered by the visitor-map service
+              rather than by our illustrative SVG.
+            </p>
           </div>
 
           <div className="border border-line bg-paper p-4">
@@ -430,49 +237,21 @@ function ClinicalMapPanel() {
               Participation signal
             </h3>
             <p className="mt-3 leading-7 text-muted">
-              Each highlighted point can represent a clinician cohort,
-              department, or partner institution. For a live study, this could
-              update after consented participation rather than tracking passive
-              website visits.
+              The goal is social proof for collaborators: as clinicians and
+              faculty open the demo, the map can make the project feel active,
+              international, and shared.
             </p>
           </div>
 
           <div className="border border-line bg-wash p-4">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-              Current demo balance
+              Research caution
             </p>
-            <div className="mt-4 space-y-3">
-              <MapBalance label="United States" value={usClinicians} total={totalClinicians} />
-              <MapBalance label="China" value={chinaClinicians} total={totalClinicians} />
-            </div>
-          </div>
-
-          <div className="border border-line bg-paper p-4">
-            <h3 className="font-display text-2xl text-primary">
-              Highlighted sites
-            </h3>
-            <div className="mt-4 space-y-3">
-              {MAP_SITES.map((site) => (
-                <div key={`${site.city}-list`} className="border-t border-line pt-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-medium text-ink">
-                        {site.city}
-                      </p>
-                      <p className="mt-1 text-sm leading-5 text-muted">
-                        {site.institution}
-                      </p>
-                    </div>
-                    <span className="font-mono text-xs text-accent">
-                      {site.clinicians}
-                    </span>
-                  </div>
-                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                    {site.role}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <p className="mt-3 leading-7 text-muted">
+              This is a public visitor widget, not a research data collection
+              mechanism. For clinician study participation, consented
+              evaluation records should remain separate from this map.
+            </p>
           </div>
         </aside>
       </div>
@@ -480,25 +259,43 @@ function ClinicalMapPanel() {
   );
 }
 
-function MapBalance({
-  label,
-  value,
-  total
-}: {
-  label: string;
-  value: number;
-  total: number;
-}) {
-  const pct = Math.round((value / total) * 100);
+function MapMyVisitorsGlobe() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    container.innerHTML = "";
+    document.getElementById("mmvst_globe")?.remove();
+
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.id = "mmvst_globe";
+    script.src = MAP_MY_VISITORS_SRC;
+    script.async = true;
+    container.appendChild(script);
+
+    return () => {
+      container.innerHTML = "";
+      document.getElementById("mmvst_globe")?.remove();
+    };
+  }, []);
 
   return (
-    <div>
-      <div className="flex items-center justify-between font-mono text-xs text-muted">
-        <span>{label}</span>
-        <span>{pct}%</span>
-      </div>
-      <div className="mt-2 h-2 border border-line bg-background">
-        <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+    <div className="relative mt-5 min-h-[460px] overflow-hidden border border-line bg-[#F7F3EA]">
+      <div
+        ref={containerRef}
+        className="flex min-h-[460px] w-full items-center justify-center p-4"
+      />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 border-t border-line bg-background/90 px-4 py-3">
+        <p className="text-sm leading-6 text-muted">
+          If the globe does not appear, the visitor-map script may be blocked by
+          the browser or network.
+        </p>
       </div>
     </div>
   );
