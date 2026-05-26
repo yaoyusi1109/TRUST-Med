@@ -1,0 +1,90 @@
+{
+  "routine": [
+    {
+      "rank": 1,
+      "model": "Claude Opus 4",
+      "score": 1284,
+      "evaluations": 184,
+      "safetyFailures": 1
+    },
+    {
+      "rank": 2,
+      "model": "GPT-4o",
+      "score": 1261,
+      "evaluations": 176,
+      "safetyFailures": 2
+    },
+    {
+      "rank": 3,
+      "model": "Gemini 2.5 Pro",
+      "score": 1228,
+      "evaluations": 163,
+      "safetyFailures": 3
+    },
+    {
+      "rank": 4,
+      "model": "Med-PaLM 2",
+      "score": 1176,
+      "evaluations": 141,
+      "safetyFailures": 4
+    },
+    {
+      "rank": 5,
+      "model": "Qwen 2.5 72B",
+      "score": 1129,
+      "evaluations": 118,
+      "safetyFailures": 5
+    },
+    {
+      "rank": 6,
+      "model": "Llama 3.1 405B",
+      "score": 1094,
+      "evaluations": 104,
+      "safetyFailures": 7
+    }
+  ],
+  "highStakes": [
+    {
+      "rank": 1,
+      "model": "Claude Opus 4",
+      "score": 1242,
+      "evaluations": 151,
+      "safetyFailures": 3
+    },
+    {
+      "rank": 2,
+      "model": "GPT-4o",
+      "score": 1218,
+      "evaluations": 158,
+      "safetyFailures": 4
+    },
+    {
+      "rank": 3,
+      "model": "Gemini 2.5 Pro",
+      "score": 1186,
+      "evaluations": 132,
+      "safetyFailures": 6
+    },
+    {
+      "rank": 4,
+      "model": "Qwen 2.5 72B",
+      "score": 1151,
+      "evaluations": 96,
+      "safetyFailures": 6
+    },
+    {
+      "rank": 5,
+      "model": "Med-PaLM 2",
+      "score": 1108,
+      "evaluations": 121,
+      "safetyFailures": 9
+    },
+    {
+      "rank": 6,
+      "model": "Llama 3.1 405B",
+      "score": 1043,
+      "evaluations": 88,
+      "safetyFailures": 12
+    }
+  ]
+}

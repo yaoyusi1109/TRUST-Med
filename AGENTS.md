@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 This repository is a Next.js 14 App Router demo for TRUST-Med.
 

@@ -1,67 +1,88 @@
 # TRUST-Med
 
-**T**ranslational **R**eal-world **U**ser-grounded **S**afety **T**esting for **M**edical AI
+Translational Real-world User-grounded Safety Testing for Medical AI.
 
-A clinician-led, safety-aware evaluation platform for medical AI — built as a collaboration between Johns Hopkins University and Nanjing University.
+## Live demo
 
----
+Vercel link placeholder: `https://trust-med-demo.vercel.app`
 
-## Why the name?
+## Status
 
-Each word in TRUST carries weight:
+Concept / Demo. Not for clinical use.
 
-| Word | Meaning |
-|------|---------|
-| **Translational** | Bridging the gap between benchmark performance and real clinical deployment — the core problem we address |
-| **Real-world** | Evaluations are grounded in actual clinical queries from practicing physicians, not standardized exam questions |
-| **User-grounded** | Clinicians are the evaluators, not crowdsourced annotators or automated metrics |
-| **Safety** | Safety is treated as an explicit, first-class dimension — never collapsed into a single preference vote |
-| **Testing** | Rigorous, reproducible evaluation methodology, not ad-hoc comparison |
-| **Med** | Medical AI — with scope designed to extend beyond LLMs to multimodal and agentic clinical systems |
+## Description
 
----
+TRUST-Med is a clinician-led evaluation platform for medical LLMs, developed as a research demo for a Systems Engineering PhD project at Johns Hopkins in collaboration with Nanjing University. The demo shows how physicians can evaluate two anonymized model responses using a scenario-specific rubric before making a pairwise preference choice. It emphasizes clinician-as-judge evaluation, cross-jurisdictional comparison across US and Chinese clinical norms, and safety-aware aggregation. All scenario data and results in this repository are illustrative and simulated.
 
-## What we're building
-
-Medical AI systems now exceed passing thresholds on clinical licensing exams, yet large-scale clinical deployment remains elusive. The bottleneck is not model capability — it is the absence of trustworthy evaluation evidence that hospitals, regulators, and clinicians can rely on when making adoption decisions.
-
-TRUST-Med addresses three research gaps:
-
-1. **Benchmarks test the wrong thing.** Over 60% of real clinical queries involve treatment decisions, documentation, and patient communication — not the fact-recall questions that dominate existing benchmarks like MedQA and MMLU-Clinical.
-
-2. **No cross-jurisdiction evidence.** All existing medical AI preference platforms are single-site and single-language. TRUST-Med brings together clinicians from JHU Medicine (US) and Nanjing University Medical School (China) to surface how the same model can rank differently under different clinical guidelines and practice norms.
-
-3. **Safety is collapsed into a single vote.** Arena-style single-preference buttons aggregate safety, accuracy, and empathy into one undifferentiated signal. TRUST-Med decomposes evaluation into four explicit dimensions: **Safety**, **Clinical Accuracy**, **Empathy & Communication**, and **Guideline Adherence**.
-
-### Key research contributions
-
-- **RC-1** — Multi-dimensional safety preference aggregation via multi-objective Bradley-Terry estimation
-- **RC-2** — Cross-jurisdiction validity framework for modeling systematic preference divergence between clinician cohorts
-- **RC-3** — Federated evaluation architecture: independent per-site deployment with statistical-only data sharing, enabling HIPAA and PIPL compliance
-
----
-
-## Demo
-
-Open `index.html` directly in a browser, or serve locally:
+## Run locally
 
 ```bash
-python3 -m http.server 3737
+npm install
+npm run dev
 ```
 
-Then visit `http://localhost:3737`.
+Then open `http://localhost:3000`.
 
-The demo includes 5 bilingual clinical scenarios (Emergency Medicine · Endocrinology · Oncology · Clinical Pharmacy · Rheumatology), two anonymized model responses per scenario, a 4-dimension rating interface, and a mock Bradley-Terry leaderboard.
+## Tech stack
 
----
+- Next.js 14 App Router
+- TypeScript
+- Tailwind CSS
+- Static JSON data in `/data`
+- React `useState` and `useReducer` for local demo state
+- Vercel-compatible static deployment
 
-## Institutions
+## Project structure
 
-| | |
-|---|---|
-| **Johns Hopkins University** | Dept. of Systems Engineering · JHU Medicine |
-| **Nanjing University** | Dept. of Computer Science · NJU Medical School |
+```text
+app/
+  about/page.tsx
+  evaluate/page.tsx
+  evaluate/[scenarioId]/page.tsx
+  evaluate/[scenarioId]/EvaluationForm.tsx
+  leaderboard/page.tsx
+  leaderboard/LeaderboardTable.tsx
+  results/[scenarioId]/page.tsx
+  globals.css
+  layout.tsx
+  page.tsx
+components/
+  ButtonLink.tsx
+  PageShell.tsx
+data/
+  leaderboard.json
+  scenarios.json
+types.ts
+```
 
----
+## References
 
-*TRUST-Med is an academic research project. All data in the current demo is simulated for illustrative purposes only.*
+This project builds on and is informed by the following work:
+
+### Evaluation frameworks for medical AI
+
+- Arora, R.K. et al. (2025). **HealthBench: Evaluating Large Language Models Towards Improved Human Health.** OpenAI. arXiv:2505.08775. https://arxiv.org/abs/2505.08775
+- **HealthBench Professional** (2026). OpenAI. https://cdn.openai.com/dd128428-0184-4e25-b155-3a7686c7d744/HealthBench-Professional.pdf
+
+### Clinician preference platforms
+
+- **MedArena**: Pairwise clinician preference evaluation of medical LLMs. Stanford University and collaborating medical centers.
+
+### Meta-analyses of medical LLM benchmarks
+
+- **MedCheck** (2025). A systematic framework for evaluating medical LLM benchmarks. arXiv:2508.04325.
+
+### Related general-purpose evaluation
+
+- Chiang, W.-L. et al. (2024). **Chatbot Arena: An Open Platform for Evaluating LLMs by Human Preference.** LMSYS Org.
+- Dubois, Y. et al. (2024). **AlpacaEval: An Automatic Evaluator of Instruction-Following Models.** Stanford.
+
+### Clinical AI deployment landscape
+
+- Reviews on barriers to clinical LLM adoption, including workflow integration, regulatory pathway, and safety considerations.
+
+## Contact / affiliation
+
+Johns Hopkins University, Systems Engineering, and Nanjing University, Computer Science.
+
+Contact placeholder: `[your-email@jhu.edu]`

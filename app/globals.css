@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #FAFAF7;
+}
+
+body {
+  min-height: 100vh;
+  background: #FAFAF7;
+  color: #1A1A1A;
+}
+
+a {
+  text-underline-offset: 4px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #002D72;
+}
+
+::selection {
+  background: #E5E0D5;
+}
