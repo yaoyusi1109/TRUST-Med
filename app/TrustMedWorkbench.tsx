@@ -9,7 +9,7 @@ import type { LeaderboardData, Scenario } from "@/types";
 const scenarioData = scenarios as Scenario[];
 const leaderboardData = leaderboard as LeaderboardData;
 
-type SectionId = "about" | "battle" | "leaderboard" | "search";
+type SectionId = "about" | "battle" | "map" | "leaderboard" | "search";
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 
@@ -48,6 +48,16 @@ function IconBarChart() {
   );
 }
 
+function IconMap() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6" />
+      <line x1="9" y1="3" x2="9" y2="18" />
+      <line x1="15" y1="6" x2="15" y2="21" />
+    </svg>
+  );
+}
+
 function IconSearch() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -62,8 +72,66 @@ function IconSearch() {
 const NAV_ITEMS: { id: SectionId; label: string; Icon: () => React.ReactElement }[] = [
   { id: "about",       label: "About Us",    Icon: IconInfo     },
   { id: "battle",      label: "Battle Mode", Icon: IconSwords   },
+  { id: "map",         label: "Clinical Map", Icon: IconMap     },
   { id: "leaderboard", label: "Leaderboard", Icon: IconBarChart },
   { id: "search",      label: "Search",      Icon: IconSearch   },
+];
+
+const MAP_SITES = [
+  {
+    city: "Baltimore",
+    institution: "Johns Hopkins Medicine",
+    country: "United States",
+    clinicians: 18,
+    x: 25,
+    y: 42,
+    role: "Research lead"
+  },
+  {
+    city: "Boston",
+    institution: "Academic medical center",
+    country: "United States",
+    clinicians: 6,
+    x: 28,
+    y: 37,
+    role: "Prospective collaborator"
+  },
+  {
+    city: "San Francisco",
+    institution: "Clinical AI safety group",
+    country: "United States",
+    clinicians: 5,
+    x: 12,
+    y: 45,
+    role: "Prospective collaborator"
+  },
+  {
+    city: "Nanjing",
+    institution: "Nanjing University",
+    country: "China",
+    clinicians: 21,
+    x: 77,
+    y: 48,
+    role: "Research partner"
+  },
+  {
+    city: "Shanghai",
+    institution: "Tertiary hospital network",
+    country: "China",
+    clinicians: 9,
+    x: 79,
+    y: 51,
+    role: "Prospective collaborator"
+  },
+  {
+    city: "Beijing",
+    institution: "Clinical informatics group",
+    country: "China",
+    clinicians: 7,
+    x: 75,
+    y: 42,
+    role: "Prospective collaborator"
+  }
 ];
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -155,9 +223,223 @@ export function TrustMedWorkbench() {
             />
           )}
           {activeSection === "leaderboard" && <LeaderboardPanel rows={topRows} />}
+          {activeSection === "map"         && <ClinicalMapPanel />}
           {activeSection === "about"       && <AboutPanel />}
           {activeSection === "search"      && <SearchPlaceholder />}
         </main>
+      </div>
+    </div>
+  );
+}
+
+// ── Clinical Map panel ─────────────────────────────────────────────────────
+
+function ClinicalMapPanel() {
+  const totalClinicians = MAP_SITES.reduce((sum, site) => sum + site.clinicians, 0);
+  const usClinicians = MAP_SITES
+    .filter((site) => site.country === "United States")
+    .reduce((sum, site) => sum + site.clinicians, 0);
+  const chinaClinicians = MAP_SITES
+    .filter((site) => site.country === "China")
+    .reduce((sum, site) => sum + site.clinicians, 0);
+
+  return (
+    <section>
+      <div className="mb-5 border-b border-line pb-5">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
+          Clinical Map
+        </p>
+        <h2 className="mt-2 font-display text-4xl leading-tight text-primary">
+          A living map of participating clinicians
+        </h2>
+        <p className="mt-3 max-w-3xl leading-7 text-muted">
+          When clinicians join TRUST-Med, their institution can be highlighted
+          on this collaboration map. The demo data below is illustrative, but
+          the intended feeling is simple: each evaluator becomes part of a
+          larger US-China clinical safety network.
+        </p>
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[1fr_340px]">
+        <div className="border border-line bg-paper p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+            <div>
+              <h3 className="font-display text-2xl text-primary">
+                TRUST-Med collaboration footprint
+              </h3>
+              <p className="mt-1 text-sm text-muted">
+                Mock visitor and collaborator highlights for demo use.
+              </p>
+            </div>
+            <span className="border border-line bg-background px-3 py-1 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+              Demo map
+            </span>
+          </div>
+
+          <div className="relative mt-5 overflow-hidden border border-line bg-[#F7F3EA]">
+            <svg
+              viewBox="0 0 100 58"
+              role="img"
+              aria-label="Map showing TRUST-Med clinical collaborators in the United States and China"
+              className="h-[420px] w-full"
+            >
+              <rect width="100" height="58" fill="#F7F3EA" />
+              <path
+                d="M2 43 C14 34 22 34 33 41 S53 50 66 40 S84 31 98 39"
+                fill="none"
+                stroke="#E5E0D5"
+                strokeWidth="0.35"
+              />
+              <path
+                d="M6 22 C16 14 30 13 38 22 C33 30 20 32 9 27 Z"
+                fill="#E8E1D2"
+                stroke="#D8CFBD"
+                strokeWidth="0.35"
+              />
+              <path
+                d="M67 24 C75 14 91 16 96 28 C91 39 77 40 66 31 Z"
+                fill="#E8E1D2"
+                stroke="#D8CFBD"
+                strokeWidth="0.35"
+              />
+              <path
+                d="M27 42 C39 30 61 30 76 47"
+                fill="none"
+                stroke="#A6192E"
+                strokeDasharray="1.4 1.2"
+                strokeLinecap="round"
+                strokeWidth="0.75"
+              />
+              <path
+                d="M24 42 C38 24 61 21 78 48"
+                fill="none"
+                stroke="#002D72"
+                strokeOpacity="0.38"
+                strokeLinecap="round"
+                strokeWidth="0.55"
+              />
+
+              {MAP_SITES.map((site) => (
+                <g key={`${site.city}-${site.institution}`}>
+                  <circle
+                    cx={site.x}
+                    cy={site.y}
+                    r={Math.max(1.6, Math.min(3.2, site.clinicians / 6))}
+                    fill={site.role.includes("Research") ? "#A6192E" : "#002D72"}
+                    opacity="0.18"
+                  />
+                  <circle
+                    cx={site.x}
+                    cy={site.y}
+                    r="0.85"
+                    fill={site.role.includes("Research") ? "#A6192E" : "#002D72"}
+                  />
+                </g>
+              ))}
+
+              <text x="12" y="15" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
+                United States
+              </text>
+              <text x="76" y="15" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
+                China
+              </text>
+              <text x="41" y="27" fill="#A6192E" fontSize="2" fontFamily="monospace">
+                JHU ⇄ NJU
+              </text>
+            </svg>
+          </div>
+        </div>
+
+        <aside className="space-y-4">
+          <div className="grid grid-cols-3 border border-line bg-paper">
+            {[
+              ["Sites", MAP_SITES.length],
+              ["Clinicians", totalClinicians],
+              ["Countries", 2]
+            ].map(([label, value]) => (
+              <div key={label} className="border-r border-line p-4 last:border-r-0">
+                <p className="font-display text-3xl text-primary">{value}</p>
+                <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="border border-line bg-paper p-4">
+            <h3 className="font-display text-2xl text-primary">
+              Participation signal
+            </h3>
+            <p className="mt-3 leading-7 text-muted">
+              Each highlighted point can represent a clinician cohort,
+              department, or partner institution. For a live study, this could
+              update after consented participation rather than tracking passive
+              website visits.
+            </p>
+          </div>
+
+          <div className="border border-line bg-wash p-4">
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
+              Current demo balance
+            </p>
+            <div className="mt-4 space-y-3">
+              <MapBalance label="United States" value={usClinicians} total={totalClinicians} />
+              <MapBalance label="China" value={chinaClinicians} total={totalClinicians} />
+            </div>
+          </div>
+
+          <div className="border border-line bg-paper p-4">
+            <h3 className="font-display text-2xl text-primary">
+              Highlighted sites
+            </h3>
+            <div className="mt-4 space-y-3">
+              {MAP_SITES.map((site) => (
+                <div key={`${site.city}-list`} className="border-t border-line pt-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-ink">
+                        {site.city}
+                      </p>
+                      <p className="mt-1 text-sm leading-5 text-muted">
+                        {site.institution}
+                      </p>
+                    </div>
+                    <span className="font-mono text-xs text-accent">
+                      {site.clinicians}
+                    </span>
+                  </div>
+                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                    {site.role}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  );
+}
+
+function MapBalance({
+  label,
+  value,
+  total
+}: {
+  label: string;
+  value: number;
+  total: number;
+}) {
+  const pct = Math.round((value / total) * 100);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between font-mono text-xs text-muted">
+        <span>{label}</span>
+        <span>{pct}%</span>
+      </div>
+      <div className="mt-2 h-2 border border-line bg-background">
+        <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
