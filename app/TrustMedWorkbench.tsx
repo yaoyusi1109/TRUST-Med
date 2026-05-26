@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import scenarios from "@/data/scenarios.json";
 import leaderboard from "@/data/leaderboard.json";
 import type { LeaderboardData, Scenario } from "@/types";
@@ -77,8 +77,101 @@ const NAV_ITEMS: { id: SectionId; label: string; Icon: () => React.ReactElement 
   { id: "search",      label: "Search",      Icon: IconSearch   },
 ];
 
-const MAP_MY_VISITORS_SRC =
-  "https://mapmyvisitors.com/globe.js?d=6QS0IJczqQHkuARz_7Z5U-YsnPMKXa24vsGm3ija3UA";
+const COLLABORATION_SITES = [
+  {
+    city: "Baltimore",
+    institution: "Johns Hopkins Medicine",
+    country: "United States",
+    clinicians: 18,
+    latitude: 39.29,
+    longitude: -76.61,
+    role: "Research lead"
+  },
+  {
+    city: "Boston",
+    institution: "Academic medical center",
+    country: "United States",
+    clinicians: 6,
+    latitude: 42.36,
+    longitude: -71.06,
+    role: "Prospective collaborator"
+  },
+  {
+    city: "San Francisco",
+    institution: "Clinical AI safety group",
+    country: "United States",
+    clinicians: 5,
+    latitude: 37.77,
+    longitude: -122.42,
+    role: "Prospective collaborator"
+  },
+  {
+    city: "Nanjing",
+    institution: "Nanjing University",
+    country: "China",
+    clinicians: 21,
+    latitude: 32.06,
+    longitude: 118.8,
+    role: "Research partner"
+  },
+  {
+    city: "Shanghai",
+    institution: "Tertiary hospital network",
+    country: "China",
+    clinicians: 9,
+    latitude: 31.23,
+    longitude: 121.47,
+    role: "Prospective collaborator"
+  },
+  {
+    city: "Beijing",
+    institution: "Clinical informatics group",
+    country: "China",
+    clinicians: 7,
+    latitude: 39.9,
+    longitude: 116.4,
+    role: "Prospective collaborator"
+  }
+];
+
+const WORLD_REGIONS = [
+  {
+    name: "North America",
+    path: "M12 18 L17 11 L27 8 L38 11 L43 18 L39 27 L32 30 L27 36 L20 35 L13 29 L7 25 Z"
+  },
+  {
+    name: "South America",
+    path: "M31 35 L38 39 L40 47 L36 55 L31 52 L28 44 L27 38 Z"
+  },
+  {
+    name: "Greenland",
+    path: "M31 3 L39 2 L46 6 L43 11 L34 11 L28 7 Z"
+  },
+  {
+    name: "Europe",
+    path: "M47 14 L55 10 L62 14 L61 20 L54 22 L47 20 Z"
+  },
+  {
+    name: "Africa",
+    path: "M51 22 L62 22 L69 31 L65 45 L57 49 L50 40 L48 29 Z"
+  },
+  {
+    name: "Asia",
+    path: "M61 12 L76 8 L94 16 L98 27 L90 35 L78 33 L68 26 L60 20 Z"
+  },
+  {
+    name: "Australia",
+    path: "M80 39 L90 38 L96 44 L92 50 L82 50 L77 45 Z"
+  },
+  {
+    name: "Japan",
+    path: "M89 24 L91 25 L92 28 L90 31 L88 28 Z"
+  },
+  {
+    name: "United Kingdom",
+    path: "M48 12 L50 11 L51 15 L49 16 Z"
+  }
+];
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -181,6 +274,17 @@ export function TrustMedWorkbench() {
 // ── Clinical Map panel ─────────────────────────────────────────────────────
 
 function ClinicalMapPanel() {
+  const totalClinicians = COLLABORATION_SITES.reduce(
+    (sum, site) => sum + site.clinicians,
+    0
+  );
+  const usClinicians = COLLABORATION_SITES.filter(
+    (site) => site.country === "United States"
+  ).reduce((sum, site) => sum + site.clinicians, 0);
+  const chinaClinicians = COLLABORATION_SITES.filter(
+    (site) => site.country === "China"
+  ).reduce((sum, site) => sum + site.clinicians, 0);
+
   return (
     <section>
       <div className="mb-5 border-b border-line pb-5">
@@ -191,10 +295,9 @@ function ClinicalMapPanel() {
           A living map of participating clinicians
         </h2>
         <p className="mt-3 max-w-3xl leading-7 text-muted">
-          When clinicians join TRUST-Med, their institution can be highlighted
-          on this collaboration map. The demo data below is illustrative, but
-          the intended feeling is simple: each evaluator becomes part of a
-          larger US-China clinical safety network.
+          When clinicians join TRUST-Med, their institution or region can be
+          highlighted on this local collaboration map. No third-party visitor
+          script is loaded; the demo uses static, consent-oriented site data.
         </p>
       </div>
 
@@ -206,29 +309,44 @@ function ClinicalMapPanel() {
                 TRUST-Med collaboration footprint
               </h3>
               <p className="mt-1 text-sm text-muted">
-                Live globe widget powered by MapMyVisitors.
+                Local world map rendered from static project data.
               </p>
             </div>
             <span className="border border-line bg-background px-3 py-1 font-mono text-xs uppercase tracking-[0.12em] text-muted">
-              Live visitor map
+              No third-party scripts
             </span>
           </div>
 
-          <MapMyVisitorsGlobe />
+          <LocalClinicalMap />
         </div>
 
         <aside className="space-y-4">
+          <div className="grid grid-cols-3 border border-line bg-paper">
+            {[
+              ["Sites", COLLABORATION_SITES.length],
+              ["Clinicians", totalClinicians],
+              ["Countries", 2]
+            ].map(([label, value]) => (
+              <div key={label} className="border-r border-line p-4 last:border-r-0">
+                <p className="font-display text-3xl text-primary">{value}</p>
+                <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
+
           <div className="border border-line bg-paper p-4">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-              Widget source
+              Map source
             </p>
             <h3 className="mt-2 font-display text-2xl text-primary">
-              MapMyVisitors Globe
+              Local clinical atlas
             </h3>
             <p className="mt-3 leading-7 text-muted">
-              This panel now uses the real MapMyVisitors JavaScript widget you
-              created, so geography is rendered by the visitor-map service
-              rather than by our illustrative SVG.
+              The map is rendered inside the app with static SVG regions and
+              site markers projected from latitude and longitude. It does not
+              send visitor or clinician data to an external mapping service.
             </p>
           </div>
 
@@ -237,21 +355,48 @@ function ClinicalMapPanel() {
               Participation signal
             </h3>
             <p className="mt-3 leading-7 text-muted">
-              The goal is social proof for collaborators: as clinicians and
-              faculty open the demo, the map can make the project feel active,
-              international, and shared.
+              The goal is social proof for collaborators: after a physician or
+              site agrees to participate, their cohort can be represented on the
+              map as part of a growing US-China evaluation network.
             </p>
           </div>
 
           <div className="border border-line bg-wash p-4">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-              Research caution
+              Current demo balance
             </p>
-            <p className="mt-3 leading-7 text-muted">
-              This is a public visitor widget, not a research data collection
-              mechanism. For clinician study participation, consented
-              evaluation records should remain separate from this map.
-            </p>
+            <div className="mt-4 space-y-3">
+              <MapBalance label="United States" value={usClinicians} total={totalClinicians} />
+              <MapBalance label="China" value={chinaClinicians} total={totalClinicians} />
+            </div>
+          </div>
+
+          <div className="border border-line bg-paper p-4">
+            <h3 className="font-display text-2xl text-primary">
+              Highlighted sites
+            </h3>
+            <div className="mt-4 space-y-3">
+              {COLLABORATION_SITES.map((site) => (
+                <div key={`${site.city}-list`} className="border-t border-line pt-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-ink">
+                        {site.city}
+                      </p>
+                      <p className="mt-1 text-sm leading-5 text-muted">
+                        {site.institution}
+                      </p>
+                    </div>
+                    <span className="font-mono text-xs text-accent">
+                      {site.clinicians}
+                    </span>
+                  </div>
+                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                    {site.role}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </aside>
       </div>
@@ -259,43 +404,148 @@ function ClinicalMapPanel() {
   );
 }
 
-function MapMyVisitorsGlobe() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-
-    if (!container) {
-      return;
-    }
-
-    container.innerHTML = "";
-    document.getElementById("mmvst_globe")?.remove();
-
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.id = "mmvst_globe";
-    script.src = MAP_MY_VISITORS_SRC;
-    script.async = true;
-    container.appendChild(script);
-
-    return () => {
-      container.innerHTML = "";
-      document.getElementById("mmvst_globe")?.remove();
-    };
-  }, []);
+function LocalClinicalMap() {
+  const baltimore = projectSite(
+    COLLABORATION_SITES.find((site) => site.city === "Baltimore")!
+  );
+  const nanjing = projectSite(
+    COLLABORATION_SITES.find((site) => site.city === "Nanjing")!
+  );
 
   return (
-    <div className="relative mt-5 min-h-[460px] overflow-hidden border border-line bg-[#F7F3EA]">
-      <div
-        ref={containerRef}
-        className="flex min-h-[460px] w-full items-center justify-center p-4"
-      />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 border-t border-line bg-background/90 px-4 py-3">
+    <div className="relative mt-5 overflow-hidden border border-line bg-[#F7F3EA]">
+      <svg
+        viewBox="0 0 100 56"
+        role="img"
+        aria-label="Local world map showing TRUST-Med clinical collaboration sites"
+        className="h-[440px] w-full"
+      >
+        <rect width="100" height="56" fill="#F7F3EA" />
+        {[20, 40, 60, 80].map((x) => (
+          <line
+            key={`longitude-${x}`}
+            x1={x}
+            y1="3"
+            x2={x}
+            y2="53"
+            stroke="#E5E0D5"
+            strokeWidth="0.16"
+          />
+        ))}
+        {[14, 28, 42].map((y) => (
+          <line
+            key={`latitude-${y}`}
+            x1="3"
+            y1={y}
+            x2="97"
+            y2={y}
+            stroke="#E5E0D5"
+            strokeWidth="0.16"
+          />
+        ))}
+        <path
+          d="M2 28 C16 22 28 22 41 27 S63 34 78 27 S91 22 98 26"
+          fill="none"
+          stroke="#E5E0D5"
+          strokeWidth="0.35"
+        />
+        {WORLD_REGIONS.map((region) => (
+          <path
+            key={region.name}
+            d={region.path}
+            fill="#E8E1D2"
+            stroke="#D5CBB8"
+            strokeLinejoin="round"
+            strokeWidth="0.38"
+          />
+        ))}
+        <path
+          d={`M${baltimore.x} ${baltimore.y} C43 6 63 7 ${nanjing.x} ${nanjing.y}`}
+          fill="none"
+          stroke="#A6192E"
+          strokeDasharray="1.4 1.2"
+          strokeLinecap="round"
+          strokeWidth="0.75"
+        />
+
+        {COLLABORATION_SITES.map((site) => {
+          const point = projectSite(site);
+          const isCoreSite = site.role.includes("Research");
+
+          return (
+            <g key={`${site.city}-${site.institution}`}>
+              <circle
+                cx={point.x}
+                cy={point.y}
+                r={Math.max(1.6, Math.min(3.2, site.clinicians / 6))}
+                fill={isCoreSite ? "#A6192E" : "#002D72"}
+                opacity="0.18"
+              />
+              <circle
+                cx={point.x}
+                cy={point.y}
+                r="0.85"
+                fill={isCoreSite ? "#A6192E" : "#002D72"}
+              />
+              <text
+                x={point.x + 1.4}
+                y={point.y - 1}
+                fill="#5A5A5A"
+                fontFamily="monospace"
+                fontSize="1.8"
+              >
+                {site.city}
+              </text>
+            </g>
+          );
+        })}
+
+        <text x="12" y="13" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
+          United States
+        </text>
+        <text x="76" y="13" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
+          China
+        </text>
+        <text x="43" y="17" fill="#A6192E" fontSize="2" fontFamily="monospace">
+          JHU ⇄ NJU
+        </text>
+      </svg>
+      <div className="border-t border-line bg-background/90 px-4 py-3">
         <p className="text-sm leading-6 text-muted">
-          If the globe does not appear, the visitor-map script may be blocked by
-          the browser or network.
+          Static demo map. No IP address, browser fingerprint, or visit event is
+          sent to a third-party map service.
         </p>
+      </div>
+    </div>
+  );
+}
+
+function projectSite(site: { latitude: number; longitude: number }) {
+  return {
+    x: ((site.longitude + 180) / 360) * 100,
+    y: ((90 - site.latitude) / 180) * 56
+  };
+}
+
+function MapBalance({
+  label,
+  value,
+  total
+}: {
+  label: string;
+  value: number;
+  total: number;
+}) {
+  const pct = Math.round((value / total) * 100);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between font-mono text-xs text-muted">
+        <span>{label}</span>
+        <span>{pct}%</span>
+      </div>
+      <div className="mt-2 h-2 border border-line bg-background">
+        <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
