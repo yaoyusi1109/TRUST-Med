@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import scenarios from "@/data/scenarios.json";
 import leaderboard from "@/data/leaderboard.json";
@@ -10,6 +11,31 @@ const scenarioData = scenarios as Scenario[];
 const leaderboardData = leaderboard as LeaderboardData;
 
 type SectionId = "about" | "battle" | "map" | "leaderboard" | "search";
+
+type CollaborationSite = {
+  city: string;
+  institution: string;
+  country: "United States" | "China";
+  clinicians: number;
+  latitude: number;
+  longitude: number;
+  role: string;
+};
+
+const LeafletClinicalMap = dynamic(
+  () =>
+    import("@/components/LeafletClinicalMap").then(
+      (module) => module.LeafletClinicalMap
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[440px] items-center justify-center border border-line bg-[#F7F3EA] text-sm text-muted">
+        Loading clinical atlas...
+      </div>
+    )
+  }
+);
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 
@@ -77,7 +103,7 @@ const NAV_ITEMS: { id: SectionId; label: string; Icon: () => React.ReactElement 
   { id: "search",      label: "Search",      Icon: IconSearch   },
 ];
 
-const COLLABORATION_SITES = [
+const COLLABORATION_SITES: CollaborationSite[] = [
   {
     city: "Baltimore",
     institution: "Johns Hopkins Medicine",
@@ -131,45 +157,6 @@ const COLLABORATION_SITES = [
     latitude: 39.9,
     longitude: 116.4,
     role: "Prospective collaborator"
-  }
-];
-
-const WORLD_REGIONS = [
-  {
-    name: "North America",
-    path: "M12 18 L17 11 L27 8 L38 11 L43 18 L39 27 L32 30 L27 36 L20 35 L13 29 L7 25 Z"
-  },
-  {
-    name: "South America",
-    path: "M31 35 L38 39 L40 47 L36 55 L31 52 L28 44 L27 38 Z"
-  },
-  {
-    name: "Greenland",
-    path: "M31 3 L39 2 L46 6 L43 11 L34 11 L28 7 Z"
-  },
-  {
-    name: "Europe",
-    path: "M47 14 L55 10 L62 14 L61 20 L54 22 L47 20 Z"
-  },
-  {
-    name: "Africa",
-    path: "M51 22 L62 22 L69 31 L65 45 L57 49 L50 40 L48 29 Z"
-  },
-  {
-    name: "Asia",
-    path: "M61 12 L76 8 L94 16 L98 27 L90 35 L78 33 L68 26 L60 20 Z"
-  },
-  {
-    name: "Australia",
-    path: "M80 39 L90 38 L96 44 L92 50 L82 50 L77 45 Z"
-  },
-  {
-    name: "Japan",
-    path: "M89 24 L91 25 L92 28 L90 31 L88 28 Z"
-  },
-  {
-    name: "United Kingdom",
-    path: "M48 12 L50 11 L51 15 L49 16 Z"
   }
 ];
 
@@ -344,9 +331,9 @@ function ClinicalMapPanel() {
               Local clinical atlas
             </h3>
             <p className="mt-3 leading-7 text-muted">
-              The map is rendered inside the app with static SVG regions and
-              site markers projected from latitude and longitude. It does not
-              send visitor or clinician data to an external mapping service.
+              The map is rendered with Leaflet inside the app, using local
+              vector regions and site markers. No external tile server or
+              visitor tracking script is loaded.
             </p>
           </div>
 
@@ -405,126 +392,17 @@ function ClinicalMapPanel() {
 }
 
 function LocalClinicalMap() {
-  const baltimore = projectSite(
-    COLLABORATION_SITES.find((site) => site.city === "Baltimore")!
-  );
-  const nanjing = projectSite(
-    COLLABORATION_SITES.find((site) => site.city === "Nanjing")!
-  );
-
   return (
     <div className="relative mt-5 overflow-hidden border border-line bg-[#F7F3EA]">
-      <svg
-        viewBox="0 0 100 56"
-        role="img"
-        aria-label="Local world map showing TRUST-Med clinical collaboration sites"
-        className="h-[440px] w-full"
-      >
-        <rect width="100" height="56" fill="#F7F3EA" />
-        {[20, 40, 60, 80].map((x) => (
-          <line
-            key={`longitude-${x}`}
-            x1={x}
-            y1="3"
-            x2={x}
-            y2="53"
-            stroke="#E5E0D5"
-            strokeWidth="0.16"
-          />
-        ))}
-        {[14, 28, 42].map((y) => (
-          <line
-            key={`latitude-${y}`}
-            x1="3"
-            y1={y}
-            x2="97"
-            y2={y}
-            stroke="#E5E0D5"
-            strokeWidth="0.16"
-          />
-        ))}
-        <path
-          d="M2 28 C16 22 28 22 41 27 S63 34 78 27 S91 22 98 26"
-          fill="none"
-          stroke="#E5E0D5"
-          strokeWidth="0.35"
-        />
-        {WORLD_REGIONS.map((region) => (
-          <path
-            key={region.name}
-            d={region.path}
-            fill="#E8E1D2"
-            stroke="#D5CBB8"
-            strokeLinejoin="round"
-            strokeWidth="0.38"
-          />
-        ))}
-        <path
-          d={`M${baltimore.x} ${baltimore.y} C43 6 63 7 ${nanjing.x} ${nanjing.y}`}
-          fill="none"
-          stroke="#A6192E"
-          strokeDasharray="1.4 1.2"
-          strokeLinecap="round"
-          strokeWidth="0.75"
-        />
-
-        {COLLABORATION_SITES.map((site) => {
-          const point = projectSite(site);
-          const isCoreSite = site.role.includes("Research");
-
-          return (
-            <g key={`${site.city}-${site.institution}`}>
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r={Math.max(1.6, Math.min(3.2, site.clinicians / 6))}
-                fill={isCoreSite ? "#A6192E" : "#002D72"}
-                opacity="0.18"
-              />
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="0.85"
-                fill={isCoreSite ? "#A6192E" : "#002D72"}
-              />
-              <text
-                x={point.x + 1.4}
-                y={point.y - 1}
-                fill="#5A5A5A"
-                fontFamily="monospace"
-                fontSize="1.8"
-              >
-                {site.city}
-              </text>
-            </g>
-          );
-        })}
-
-        <text x="12" y="13" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
-          United States
-        </text>
-        <text x="76" y="13" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
-          China
-        </text>
-        <text x="43" y="17" fill="#A6192E" fontSize="2" fontFamily="monospace">
-          JHU ⇄ NJU
-        </text>
-      </svg>
+      <LeafletClinicalMap sites={COLLABORATION_SITES} />
       <div className="border-t border-line bg-background/90 px-4 py-3">
         <p className="text-sm leading-6 text-muted">
-          Static demo map. No IP address, browser fingerprint, or visit event is
-          sent to a third-party map service.
+          Leaflet-powered local map. No IP address, browser fingerprint, or
+          visit event is sent to a third-party map service.
         </p>
       </div>
     </div>
   );
-}
-
-function projectSite(site: { latitude: number; longitude: number }) {
-  return {
-    x: ((site.longitude + 180) / 360) * 100,
-    y: ((90 - site.latitude) / 180) * 56
-  };
 }
 
 function MapBalance({

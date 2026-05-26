@@ -32,3 +32,33 @@ input[type="radio"] {
 ::selection {
   background: #E5E0D5;
 }
+
+.leaflet-container {
+  background: #F7F3EA;
+  font-family: var(--font-newsreader), Georgia, serif;
+}
+
+.leaflet-control-zoom {
+  border: 1px solid #E5E0D5 !important;
+  box-shadow: none !important;
+}
+
+.leaflet-control-zoom a {
+  background: #FAFAF7 !important;
+  border-bottom-color: #E5E0D5 !important;
+  color: #002D72 !important;
+}
+
+.leaflet-tooltip {
+  background: rgba(250, 250, 247, 0.92) !important;
+  border: 1px solid #E5E0D5 !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  color: #1A1A1A !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
