@@ -5,6 +5,14 @@ import { PageShell } from "@/components/PageShell";
 
 const scenarioData = scenarios as Scenario[];
 
+function difficultyLabel(scenario: Scenario) {
+  if (scenario.language !== "中文") {
+    return scenario.difficulty;
+  }
+
+  return scenario.difficulty === "High-Stakes" ? "高风险" : "常规场景";
+}
+
 export default function EvaluatePage() {
   return (
     <PageShell
@@ -36,7 +44,7 @@ export default function EvaluatePage() {
                     : "border-line text-muted"
                 }`}
               >
-                {scenario.difficulty}
+                {difficultyLabel(scenario)}
               </span>
             </div>
           </Link>

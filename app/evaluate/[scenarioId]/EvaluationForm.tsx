@@ -33,6 +33,52 @@ function reducer(state: Checks, action: Action): Checks {
 
 export function EvaluationForm({ scenario }: { scenario: Scenario }) {
   const router = useRouter();
+  const isChinese = scenario.language === "中文";
+  const copy = isChinese
+    ? {
+        difficulty:
+          scenario.difficulty === "High-Stakes" ? "高风险" : "常规场景",
+        modelA: "模型 A",
+        modelB: "模型 B",
+        rubricTitle: "场景专属测评量表",
+        rubricIntro: "请先完成各项标准核对，再进行模型偏好选择。",
+        criterion: "评价标准",
+        weight: "权重",
+        modelAMeets: "模型 A 符合",
+        modelBMeets: "模型 B 符合",
+        safetyCritical: "安全关键项",
+        preferenceTitle: "总体来看，你更倾向于哪一个回答？",
+        options: [
+          "模型 A 明显更好",
+          "模型 A 略好",
+          "模型 B 略好",
+          "模型 B 明显更好"
+        ],
+        notes: "补充说明（选填）",
+        submit: "提交测评"
+      }
+    : {
+        difficulty: scenario.difficulty,
+        modelA: "Model A",
+        modelB: "Model B",
+        rubricTitle: "Scenario-specific rubric",
+        rubricIntro:
+          "Complete the rubric before making the pairwise preference choice.",
+        criterion: "Criterion",
+        weight: "Weight",
+        modelAMeets: "Model A meets this",
+        modelBMeets: "Model B meets this",
+        safetyCritical: "Safety-critical",
+        preferenceTitle: "Overall, which response do you prefer?",
+        options: [
+          "Model A is clearly better",
+          "Model A is slightly better",
+          "Model B is slightly better",
+          "Model B is clearly better"
+        ],
+        notes: "Any additional notes? (Optional)",
+        submit: "Submit evaluation"
+      };
   const [checks, dispatch] = useReducer(
     reducer,
     scenario.rubric,
@@ -64,7 +110,7 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
                   : "border-line text-muted"
               }`}
             >
-              {scenario.difficulty}
+              {copy.difficulty}
             </span>
           </div>
           <h1 className="font-display text-3xl leading-tight text-primary">
@@ -78,8 +124,8 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
 
         <section className="grid gap-5 lg:grid-cols-2">
           {[
-            ["Model A", scenario.modelA.response],
-            ["Model B", scenario.modelB.response]
+            [copy.modelA, scenario.modelA.response],
+            [copy.modelB, scenario.modelB.response]
           ].map(([label, response]) => (
             <article key={label} className="border border-line bg-paper">
               <div className="border-b border-line bg-wash px-5 py-3 font-mono text-xs uppercase tracking-[0.16em] text-primary">
@@ -97,23 +143,23 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
         <section className="border border-line bg-paper p-6">
           <div className="mb-5">
             <h2 className="font-display text-3xl text-primary">
-              Scenario-specific rubric
+              {copy.rubricTitle}
             </h2>
-            <p className="mt-2 text-muted">
-              Complete the rubric before making the pairwise preference choice.
-            </p>
+            <p className="mt-2 text-muted">{copy.rubricIntro}</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] border-collapse">
               <thead>
                 <tr className="border-b border-line text-left font-mono text-xs uppercase tracking-[0.14em] text-muted">
-                  <th className="py-3 pr-4 font-medium">Criterion</th>
-                  <th className="px-4 py-3 text-center font-medium">Weight</th>
+                  <th className="py-3 pr-4 font-medium">{copy.criterion}</th>
                   <th className="px-4 py-3 text-center font-medium">
-                    Model A meets this
+                    {copy.weight}
                   </th>
                   <th className="px-4 py-3 text-center font-medium">
-                    Model B meets this
+                    {copy.modelAMeets}
+                  </th>
+                  <th className="px-4 py-3 text-center font-medium">
+                    {copy.modelBMeets}
                   </th>
                 </tr>
               </thead>
@@ -129,7 +175,7 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
                       {item.criterion}
                       {item.isSafetyCritical ? (
                         <span className="ml-3 font-mono text-xs uppercase tracking-[0.12em] text-accent">
-                          Safety-critical
+                          {copy.safetyCritical}
                         </span>
                       ) : null}
                     </td>
@@ -142,7 +188,7 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <input
-                        aria-label={`Model A meets ${item.criterion}`}
+                        aria-label={`${copy.modelAMeets}: ${item.criterion}`}
                         type="checkbox"
                         checked={checks[item.id].a}
                         onChange={() =>
@@ -156,7 +202,7 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <input
-                        aria-label={`Model B meets ${item.criterion}`}
+                        aria-label={`${copy.modelBMeets}: ${item.criterion}`}
                         type="checkbox"
                         checked={checks[item.id].b}
                         onChange={() =>
@@ -177,15 +223,10 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
 
         <section className="border border-line bg-paper p-6">
           <h2 className="font-display text-3xl text-primary">
-            Overall, which response do you prefer?
+            {copy.preferenceTitle}
           </h2>
           <fieldset className="mt-5 grid gap-3 md:grid-cols-2">
-            {[
-              "Model A is clearly better",
-              "Model A is slightly better",
-              "Model B is slightly better",
-              "Model B is clearly better"
-            ].map((option) => (
+            {copy.options.map((option) => (
               <label
                 key={option}
                 className="flex items-center gap-3 border border-line bg-background p-4 text-ink"
@@ -204,7 +245,7 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
           </fieldset>
           <label className="mt-6 block">
             <span className="text-sm text-muted">
-              Any additional notes? (Optional)
+              {copy.notes}
             </span>
             <textarea
               value={comment}
@@ -216,7 +257,7 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
             type="submit"
             className="mt-6 rounded-button border border-accent bg-accent px-6 py-3 text-sm text-white transition-colors hover:bg-background hover:text-accent"
           >
-            Submit evaluation
+            {copy.submit}
           </button>
         </section>
       </form>

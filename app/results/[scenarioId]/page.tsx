@@ -20,27 +20,51 @@ export default function ResultsPage({
     notFound();
   }
 
-  return (
-    <main className="mx-auto max-w-content px-5 py-14">
-      <section className="border border-line bg-paper p-7">
-        <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-          Evaluation submitted
-        </p>
-        <h1 className="mt-4 font-display text-4xl text-primary">
-          Thank you for completing this demo evaluation.
-        </h1>
-        <p className="mt-5 max-w-3xl leading-8 text-muted">
-          Your selections were recorded locally for this walkthrough only. No
-          data is sent to a server in this demo.
-        </p>
-      </section>
-
-      <section className="mt-8 grid gap-5 md:grid-cols-2">
-        <article className="border border-line bg-paper p-6">
-          <h2 className="font-display text-2xl text-primary">
-            Model identities
-          </h2>
-          <p className="mt-4 leading-8 text-muted">
+  const isChinese = scenario.language === "中文";
+  const copy = isChinese
+    ? {
+        eyebrow: "测评已提交",
+        title: "感谢完成本次演示测评。",
+        intro: "本次选择仅用于本地演示流程，不会上传服务器，也不会记录真实临床数据。",
+        identities: "模型身份",
+        identityText: (
+          <>
+            模型 A 为{" "}
+            <span className="font-semibold text-ink">
+              {scenario.modelA.trueName}
+            </span>
+            。模型 B 为{" "}
+            <span className="font-semibold text-ink">
+              {scenario.modelB.trueName}
+            </span>
+            。
+          </>
+        ),
+        aggregate: "模拟汇总结果",
+        aggregateText: (
+          <>
+            在此前{" "}
+            <span className="font-mono text-ink">
+              {scenario.mockAggregate.totalEvaluations}
+            </span>{" "}
+            次模拟测评中，{" "}
+            <span className="font-mono text-ink">
+              {scenario.mockAggregate.preferenceB}%
+            </span>{" "}
+            的临床医生更倾向于模型 B。
+          </>
+        ),
+        another: "继续测评其他场景",
+        leaderboard: "查看排行榜"
+      }
+    : {
+        eyebrow: "Evaluation submitted",
+        title: "Thank you for completing this demo evaluation.",
+        intro:
+          "Your selections were recorded locally for this walkthrough only. No data is sent to a server in this demo.",
+        identities: "Model identities",
+        identityText: (
+          <>
             Model A was{" "}
             <span className="font-semibold text-ink">
               {scenario.modelA.trueName}
@@ -50,13 +74,11 @@ export default function ResultsPage({
               {scenario.modelB.trueName}
             </span>
             .
-          </p>
-        </article>
-        <article className="border border-line bg-paper p-6">
-          <h2 className="font-display text-2xl text-primary">
-            Mock aggregate
-          </h2>
-          <p className="mt-4 leading-8 text-muted">
+          </>
+        ),
+        aggregate: "Mock aggregate",
+        aggregateText: (
+          <>
             Across{" "}
             <span className="font-mono text-ink">
               {scenario.mockAggregate.totalEvaluations}
@@ -66,14 +88,45 @@ export default function ResultsPage({
               {scenario.mockAggregate.preferenceB}%
             </span>{" "}
             of clinicians preferred Model B.
-          </p>
+          </>
+        ),
+        another: "Try another scenario",
+        leaderboard: "View leaderboard"
+      };
+
+  return (
+    <main className="mx-auto max-w-content px-5 py-14">
+      <section className="border border-line bg-paper p-7">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
+          {copy.eyebrow}
+        </p>
+        <h1 className="mt-4 font-display text-4xl text-primary">
+          {copy.title}
+        </h1>
+        <p className="mt-5 max-w-3xl leading-8 text-muted">
+          {copy.intro}
+        </p>
+      </section>
+
+      <section className="mt-8 grid gap-5 md:grid-cols-2">
+        <article className="border border-line bg-paper p-6">
+          <h2 className="font-display text-2xl text-primary">
+            {copy.identities}
+          </h2>
+          <p className="mt-4 leading-8 text-muted">{copy.identityText}</p>
+        </article>
+        <article className="border border-line bg-paper p-6">
+          <h2 className="font-display text-2xl text-primary">
+            {copy.aggregate}
+          </h2>
+          <p className="mt-4 leading-8 text-muted">{copy.aggregateText}</p>
         </article>
       </section>
 
       <div className="mt-8 flex flex-wrap gap-4">
-        <ButtonLink href="/evaluate">Try another scenario</ButtonLink>
+        <ButtonLink href="/evaluate">{copy.another}</ButtonLink>
         <ButtonLink href="/leaderboard" variant="secondary">
-          View leaderboard
+          {copy.leaderboard}
         </ButtonLink>
       </div>
     </main>
