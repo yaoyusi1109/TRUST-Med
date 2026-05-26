@@ -296,7 +296,7 @@ function ClinicalMapPanel() {
                 TRUST-Med collaboration footprint
               </h3>
               <p className="mt-1 text-sm text-muted">
-                Local world map rendered from static project data.
+                Leaflet map with local Natural Earth country boundaries.
               </p>
             </div>
             <span className="border border-line bg-background px-3 py-1 font-mono text-xs uppercase tracking-[0.12em] text-muted">

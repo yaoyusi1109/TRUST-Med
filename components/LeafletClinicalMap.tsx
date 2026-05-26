@@ -2,13 +2,17 @@
 
 import {
   CircleMarker,
+  GeoJSON,
   MapContainer,
-  Polygon,
   Polyline,
   Popup,
   Tooltip
 } from "react-leaflet";
 import type { LatLngExpression, PathOptions } from "leaflet";
+import { feature } from "topojson-client";
+import worldAtlas from "world-atlas/countries-110m.json";
+import type { FeatureCollection, Geometry } from "geojson";
+import type { GeometryCollection, Topology } from "topojson-specification";
 
 type CollaborationSite = {
   city: string;
@@ -20,11 +24,6 @@ type CollaborationSite = {
   role: string;
 };
 
-type Region = {
-  name: string;
-  coordinates: LatLngExpression[];
-};
-
 const regionStyle: PathOptions = {
   color: "#D5CBB8",
   fillColor: "#E8E1D2",
@@ -33,84 +32,13 @@ const regionStyle: PathOptions = {
   weight: 1
 };
 
-const worldRegions: Region[] = [
-  {
-    name: "North America",
-    coordinates: [
-      [67, -165],
-      [72, -125],
-      [58, -65],
-      [43, -55],
-      [25, -82],
-      [18, -105],
-      [28, -130],
-      [48, -150]
-    ]
-  },
-  {
-    name: "South America",
-    coordinates: [
-      [12, -81],
-      [6, -52],
-      [-18, -39],
-      [-55, -67],
-      [-34, -78],
-      [-8, -82]
-    ]
-  },
-  {
-    name: "Greenland",
-    coordinates: [
-      [83, -73],
-      [82, -20],
-      [70, -15],
-      [60, -45],
-      [66, -72]
-    ]
-  },
-  {
-    name: "Europe",
-    coordinates: [
-      [70, -10],
-      [62, 32],
-      [45, 40],
-      [36, 5],
-      [45, -10]
-    ]
-  },
-  {
-    name: "Africa",
-    coordinates: [
-      [35, -18],
-      [32, 35],
-      [8, 52],
-      [-35, 22],
-      [-28, -8],
-      [5, -18]
-    ]
-  },
-  {
-    name: "Asia",
-    coordinates: [
-      [72, 35],
-      [64, 116],
-      [50, 150],
-      [25, 138],
-      [8, 104],
-      [22, 70],
-      [40, 45]
-    ]
-  },
-  {
-    name: "Australia",
-    coordinates: [
-      [-11, 113],
-      [-16, 153],
-      [-39, 145],
-      [-34, 115]
-    ]
-  }
-];
+const topology = worldAtlas as unknown as Topology<{
+  countries: GeometryCollection;
+}>;
+const countries = feature(
+  topology,
+  topology.objects.countries
+) as unknown as FeatureCollection<Geometry>;
 
 function graticuleLines() {
   const lines: LatLngExpression[][] = [];
@@ -171,19 +99,7 @@ export function LeafletClinicalMap({
         />
       ))}
 
-      {worldRegions.map((region) => (
-        <Polygon
-          key={region.name}
-          positions={region.coordinates}
-          pathOptions={regionStyle}
-        >
-          <Tooltip direction="center" permanent>
-            <span className="font-mono text-[10px] text-muted">
-              {region.name}
-            </span>
-          </Tooltip>
-        </Polygon>
-      ))}
+      <GeoJSON data={countries} style={() => regionStyle} />
 
       {collaborationLine.length > 0 ? (
         <Polyline
