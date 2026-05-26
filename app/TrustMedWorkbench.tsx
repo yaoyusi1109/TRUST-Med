@@ -83,8 +83,8 @@ const MAP_SITES = [
     institution: "Johns Hopkins Medicine",
     country: "United States",
     clinicians: 18,
-    x: 25,
-    y: 42,
+    x: 27,
+    y: 24,
     role: "Research lead"
   },
   {
@@ -93,7 +93,7 @@ const MAP_SITES = [
     country: "United States",
     clinicians: 6,
     x: 28,
-    y: 37,
+    y: 22,
     role: "Prospective collaborator"
   },
   {
@@ -101,8 +101,8 @@ const MAP_SITES = [
     institution: "Clinical AI safety group",
     country: "United States",
     clinicians: 5,
-    x: 12,
-    y: 45,
+    x: 15,
+    y: 26,
     role: "Prospective collaborator"
   },
   {
@@ -110,8 +110,8 @@ const MAP_SITES = [
     institution: "Nanjing University",
     country: "China",
     clinicians: 21,
-    x: 77,
-    y: 48,
+    x: 79,
+    y: 28,
     role: "Research partner"
   },
   {
@@ -120,7 +120,7 @@ const MAP_SITES = [
     country: "China",
     clinicians: 9,
     x: 79,
-    y: 51,
+    y: 30,
     role: "Prospective collaborator"
   },
   {
@@ -128,9 +128,48 @@ const MAP_SITES = [
     institution: "Clinical informatics group",
     country: "China",
     clinicians: 7,
-    x: 75,
-    y: 42,
+    x: 77,
+    y: 24,
     role: "Prospective collaborator"
+  }
+];
+
+const WORLD_REGIONS = [
+  {
+    name: "North America",
+    path: "M8 17 L14 11 L24 9 L32 13 L35 20 L30 26 L24 27 L20 31 L14 30 L10 25 L5 23 Z"
+  },
+  {
+    name: "South America",
+    path: "M28 31 L34 34 L36 42 L32 52 L27 49 L25 41 L23 35 Z"
+  },
+  {
+    name: "Greenland",
+    path: "M28 4 L36 3 L42 7 L39 11 L30 11 L25 8 Z"
+  },
+  {
+    name: "Europe",
+    path: "M45 15 L52 11 L59 14 L58 20 L51 22 L44 20 Z"
+  },
+  {
+    name: "Africa",
+    path: "M49 23 L59 22 L65 31 L61 43 L53 46 L47 38 L45 29 Z"
+  },
+  {
+    name: "Asia",
+    path: "M59 13 L75 10 L91 17 L94 27 L86 33 L75 31 L66 25 L58 20 Z"
+  },
+  {
+    name: "Australia",
+    path: "M78 38 L88 37 L94 43 L91 49 L81 49 L76 44 Z"
+  },
+  {
+    name: "Japan",
+    path: "M87 24 L89 25 L90 28 L88 30 L86 28 Z"
+  },
+  {
+    name: "United Kingdom",
+    path: "M46 13 L48 12 L49 15 L47 16 Z"
   }
 ];
 
@@ -268,7 +307,7 @@ function ClinicalMapPanel() {
                 TRUST-Med collaboration footprint
               </h3>
               <p className="mt-1 text-sm text-muted">
-                Mock visitor and collaborator highlights for demo use.
+                Real-world basemap with illustrative collaborator highlights.
               </p>
             </div>
             <span className="border border-line bg-background px-3 py-1 font-mono text-xs uppercase tracking-[0.12em] text-muted">
@@ -278,32 +317,52 @@ function ClinicalMapPanel() {
 
           <div className="relative mt-5 overflow-hidden border border-line bg-[#F7F3EA]">
             <svg
-              viewBox="0 0 100 58"
+              viewBox="0 0 100 56"
               role="img"
               aria-label="Map showing TRUST-Med clinical collaborators in the United States and China"
               className="h-[420px] w-full"
             >
-              <rect width="100" height="58" fill="#F7F3EA" />
+              <rect width="100" height="56" fill="#F7F3EA" />
+              {[20, 40, 60, 80].map((x) => (
+                <line
+                  key={`longitude-${x}`}
+                  x1={x}
+                  y1="3"
+                  x2={x}
+                  y2="53"
+                  stroke="#E5E0D5"
+                  strokeWidth="0.16"
+                />
+              ))}
+              {[14, 28, 42].map((y) => (
+                <line
+                  key={`latitude-${y}`}
+                  x1="3"
+                  y1={y}
+                  x2="97"
+                  y2={y}
+                  stroke="#E5E0D5"
+                  strokeWidth="0.16"
+                />
+              ))}
               <path
-                d="M2 43 C14 34 22 34 33 41 S53 50 66 40 S84 31 98 39"
+                d="M2 28 C16 22 28 22 41 27 S63 34 78 27 S91 22 98 26"
                 fill="none"
                 stroke="#E5E0D5"
                 strokeWidth="0.35"
               />
+              {WORLD_REGIONS.map((region) => (
+                <path
+                  key={region.name}
+                  d={region.path}
+                  fill="#E8E1D2"
+                  stroke="#D5CBB8"
+                  strokeLinejoin="round"
+                  strokeWidth="0.38"
+                />
+              ))}
               <path
-                d="M6 22 C16 14 30 13 38 22 C33 30 20 32 9 27 Z"
-                fill="#E8E1D2"
-                stroke="#D8CFBD"
-                strokeWidth="0.35"
-              />
-              <path
-                d="M67 24 C75 14 91 16 96 28 C91 39 77 40 66 31 Z"
-                fill="#E8E1D2"
-                stroke="#D8CFBD"
-                strokeWidth="0.35"
-              />
-              <path
-                d="M27 42 C39 30 61 30 76 47"
+                d="M27 24 C39 11 62 12 79 28"
                 fill="none"
                 stroke="#A6192E"
                 strokeDasharray="1.4 1.2"
@@ -311,7 +370,7 @@ function ClinicalMapPanel() {
                 strokeWidth="0.75"
               />
               <path
-                d="M24 42 C38 24 61 21 78 48"
+                d="M15 26 C35 8 62 8 79 28"
                 fill="none"
                 stroke="#002D72"
                 strokeOpacity="0.38"
@@ -337,13 +396,13 @@ function ClinicalMapPanel() {
                 </g>
               ))}
 
-              <text x="12" y="15" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
+              <text x="12" y="13" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
                 United States
               </text>
-              <text x="76" y="15" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
+              <text x="76" y="13" fill="#5A5A5A" fontSize="2.2" fontFamily="monospace">
                 China
               </text>
-              <text x="41" y="27" fill="#A6192E" fontSize="2" fontFamily="monospace">
+              <text x="43" y="17" fill="#A6192E" fontSize="2" fontFamily="monospace">
                 JHU ⇄ NJU
               </text>
             </svg>
