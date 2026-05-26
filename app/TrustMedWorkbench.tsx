@@ -300,7 +300,7 @@ function ClinicalMapPanel() {
               </p>
             </div>
             <span className="border border-line bg-background px-3 py-1 font-mono text-xs uppercase tracking-[0.12em] text-muted">
-              No third-party scripts
+              Leaflet + Natural Earth v2
             </span>
           </div>
 
@@ -397,8 +397,9 @@ function LocalClinicalMap() {
       <LeafletClinicalMap sites={COLLABORATION_SITES} />
       <div className="border-t border-line bg-background/90 px-4 py-3">
         <p className="text-sm leading-6 text-muted">
-          Leaflet-powered local map. No IP address, browser fingerprint, or
-          visit event is sent to a third-party map service.
+          Natural Earth country boundaries rendered locally in Leaflet. No IP
+          address, browser fingerprint, or visit event is sent to a third-party
+          map service.
         </p>
       </div>
     </div>
