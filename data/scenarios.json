@@ -727,6 +727,18 @@
       "title": "病程时间轴摘要",
       "subtitle": "根据公开病例讨论改写的结构化演示材料。",
       "sourceUrl": "https://www.dxy.cn/bbs/newweb/pc/post/51171205",
+      "images": [
+        {
+          "src": "/cases/dxy-44937552/case-01.png",
+          "alt": "首诊CT检查报告单截图（已匿名处理）",
+          "caption": "首诊CT报告（示例素材，隐私信息已遮盖）"
+        },
+        {
+          "src": "/cases/dxy-44937552/case-02.png",
+          "alt": "首诊检验报告单截图（已匿名处理）",
+          "caption": "首诊检验报告（示例素材，隐私信息已遮盖）"
+        }
+      ],
       "rows": [
         {
           "label": "首诊主诉",
