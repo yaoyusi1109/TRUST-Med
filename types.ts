@@ -20,6 +20,12 @@ export type ScenarioEvidence = {
     value: string;
     note?: string;
   }[];
+  images?: {
+    src: string;
+    alt: string;
+    caption?: string;
+  }[];
+  sourceUrl?: string;
 };
 
 export type Scenario = {
@@ -28,7 +34,13 @@ export type Scenario = {
   category: string;
   difficulty: "Routine" | "High-Stakes";
   language: "EN" | "中文";
-  modality?: "Text" | "Imaging" | "Patient chat" | "Genomics" | "Medication list";
+  modality?:
+    | "Text"
+    | "Imaging"
+    | "Patient chat"
+    | "Genomics"
+    | "Medication list"
+    | "ECG";
   vignette: string;
   evidence?: ScenarioEvidence;
   query: string;

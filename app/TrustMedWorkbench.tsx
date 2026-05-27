@@ -4,9 +4,21 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
+import { LanguageToggle, useLanguage } from "@/components/LanguageProvider";
 import scenarios from "@/data/scenarios.json";
 import leaderboard from "@/data/leaderboard.json";
 import type { LeaderboardData, Scenario } from "@/types";
+import {
+  difficultyLabel,
+  rubricCriterion,
+  scenarioCategory,
+  scenarioModality,
+  scenarioQuery,
+  scenarioTitle,
+  scenarioVignette,
+  translatedEvidence,
+  workbenchCopy
+} from "@/lib/i18n";
 
 const scenarioData = scenarios as Scenario[];
 const leaderboardData = leaderboard as LeaderboardData;
@@ -96,12 +108,12 @@ function IconSearch() {
 
 // ── Nav config ─────────────────────────────────────────────────────────────
 
-const NAV_ITEMS: { id: SectionId; label: string; Icon: () => React.ReactElement }[] = [
-  { id: "about",       label: "About Us",    Icon: IconInfo     },
-  { id: "battle",      label: "Battle Mode", Icon: IconSwords   },
-  { id: "map",         label: "Clinical Atlas", Icon: IconMap   },
-  { id: "leaderboard", label: "Leaderboard", Icon: IconBarChart },
-  { id: "search",      label: "Search",      Icon: IconSearch   },
+const NAV_ITEMS: { id: SectionId; Icon: () => React.ReactElement }[] = [
+  { id: "about", Icon: IconInfo },
+  { id: "battle", Icon: IconSwords },
+  { id: "map", Icon: IconMap },
+  { id: "leaderboard", Icon: IconBarChart },
+  { id: "search", Icon: IconSearch },
 ];
 
 const COLLABORATION_SITES: CollaborationSite[] = [
@@ -161,18 +173,11 @@ const COLLABORATION_SITES: CollaborationSite[] = [
   }
 ];
 
-// ── Helpers ────────────────────────────────────────────────────────────────
-
-function difficultyLabel(scenario: Scenario) {
-  if (scenario.language === "中文") {
-    return scenario.difficulty === "High-Stakes" ? "高风险" : "常规场景";
-  }
-  return scenario.difficulty;
-}
-
 // ── Root component ─────────────────────────────────────────────────────────
 
 export function TrustMedWorkbench() {
+  const { language } = useLanguage();
+  const copy = workbenchCopy[language];
   const [activeSection, setActiveSection] = useState<SectionId>("battle");
   const [activeScenarioIndex, setActiveScenarioIndex] = useState(0);
   const [showRubric, setShowRubric] = useState(false);
@@ -180,6 +185,7 @@ export function TrustMedWorkbench() {
   const activeScenario = scenarioData[activeScenarioIndex];
   const topRows = useMemo(() => leaderboardData.highStakes.slice(0, 4), []);
   const activeNav = NAV_ITEMS.find((n) => n.id === activeSection)!;
+  const activeNavLabel = copy.nav[activeNav.id];
 
   function chooseScenario(index: number) {
     setActiveScenarioIndex(index);
@@ -203,7 +209,9 @@ export function TrustMedWorkbench() {
 
         {/* Nav icons */}
         <nav className="flex flex-1 flex-col items-center gap-1 py-3" aria-label="Main navigation">
-          {NAV_ITEMS.map(({ id, label, Icon }) => (
+          {NAV_ITEMS.map(({ id, Icon }) => {
+            const label = copy.nav[id];
+            return (
             <button
               key={id}
               type="button"
@@ -222,7 +230,7 @@ export function TrustMedWorkbench() {
                 {label}
               </span>
             </button>
-          ))}
+          );})}
         </nav>
       </aside>
 
@@ -233,8 +241,11 @@ export function TrustMedWorkbench() {
           <span className="font-display text-xl text-primary">TRUST-Med</span>
           <span className="font-mono text-xs text-muted">/</span>
           <span className="font-mono text-xs uppercase tracking-[0.16em] text-muted">
-            {activeNav.label}
+            {activeNavLabel}
           </span>
+          <div className="ml-auto">
+            <LanguageToggle compact />
+          </div>
         </header>
 
         {/* Content */}
@@ -262,6 +273,8 @@ export function TrustMedWorkbench() {
 // ── Clinical Atlas panel ───────────────────────────────────────────────────
 
 function ClinicalMapPanel() {
+  const { language } = useLanguage();
+  const copy = workbenchCopy[language].map;
   const totalClinicians = COLLABORATION_SITES.reduce(
     (sum, site) => sum + site.clinicians,
     0
@@ -277,16 +290,13 @@ function ClinicalMapPanel() {
     <section>
       <div className="mb-5 border-b border-line pb-5">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-          Clinical Atlas
+          {copy.eyebrow}
         </p>
         <h2 className="mt-2 font-display text-4xl leading-tight text-primary">
-          Consent-based collaboration geography
+          {copy.title}
         </h2>
         <p className="mt-3 max-w-3xl leading-7 text-muted">
-          This panel shows where participating clinical cohorts can be
-          represented after consent. It is not a visitor tracker: the basemap,
-          country boundaries, site markers, and collaboration line are all
-          rendered locally in Leaflet.
+          {copy.intro}
         </p>
       </div>
 
@@ -295,14 +305,14 @@ function ClinicalMapPanel() {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
             <div>
               <h3 className="font-display text-2xl text-primary">
-                Natural Earth clinical atlas
+                {copy.atlasTitle}
               </h3>
               <p className="mt-1 text-sm text-muted">
-                Real country boundaries rendered locally with Leaflet.
+                {copy.atlasIntro}
               </p>
             </div>
             <span className="border border-line bg-background px-3 py-1 font-mono text-xs uppercase tracking-[0.12em] text-muted">
-              Leaflet real basemap 2026-05-27
+              {copy.badge}
             </span>
           </div>
 
@@ -310,9 +320,7 @@ function ClinicalMapPanel() {
             <LeafletClinicalMap sites={COLLABORATION_SITES} />
             <div className="border-t border-line bg-background/90 px-4 py-3">
               <p className="text-sm leading-6 text-muted">
-                Natural Earth country boundaries rendered locally in Leaflet.
-                No IP address, browser fingerprint, or visit event is sent to a
-                third-party map service.
+                {copy.privacy}
               </p>
             </div>
           </div>
@@ -321,9 +329,9 @@ function ClinicalMapPanel() {
         <aside className="space-y-4">
           <div className="grid grid-cols-3 border border-line bg-paper">
             {[
-              ["Sites", COLLABORATION_SITES.length],
-              ["Clinicians", totalClinicians],
-              ["Countries", 2]
+              [copy.stats[0], COLLABORATION_SITES.length],
+              [copy.stats[1], totalClinicians],
+              [copy.stats[2], 2]
             ].map(([label, value]) => (
               <div key={label} className="border-r border-line p-4 last:border-r-0">
                 <p className="font-display text-3xl text-primary">{value}</p>
@@ -336,42 +344,38 @@ function ClinicalMapPanel() {
 
           <div className="border border-line bg-paper p-4">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-              Map source
+              {copy.source}
             </p>
             <h3 className="mt-2 font-display text-2xl text-primary">
-              Local Natural Earth data
+              {copy.sourceTitle}
             </h3>
             <p className="mt-3 leading-7 text-muted">
-              The map uses the `world-atlas` Natural Earth dataset bundled with
-              the app. Leaflet handles interaction, but no external tile server
-              or visitor tracking script is loaded.
+              {copy.sourceBody}
             </p>
           </div>
 
           <div className="border border-line bg-paper p-4">
             <h3 className="font-display text-2xl text-primary">
-              Participation signal
+              {copy.signal}
             </h3>
             <p className="mt-3 leading-7 text-muted">
-              The goal is social proof for collaborators: after a physician or
-              site agrees to participate, their cohort can be represented on the
-              map as part of a growing US-China evaluation network.
+              {copy.signalBody}
             </p>
           </div>
 
           <div className="border border-line bg-wash p-4">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-              Current demo balance
+              {copy.balance}
             </p>
             <div className="mt-4 space-y-3">
-              <MapBalance label="United States" value={usClinicians} total={totalClinicians} />
-              <MapBalance label="China" value={chinaClinicians} total={totalClinicians} />
+              <MapBalance label={language === "zh" ? "美国" : "United States"} value={usClinicians} total={totalClinicians} />
+              <MapBalance label={language === "zh" ? "中国" : "China"} value={chinaClinicians} total={totalClinicians} />
             </div>
           </div>
 
           <div className="border border-line bg-paper p-4">
             <h3 className="font-display text-2xl text-primary">
-              Highlighted sites
+              {copy.sites}
             </h3>
             <div className="mt-4 space-y-3">
               {COLLABORATION_SITES.map((site) => (
@@ -443,16 +447,19 @@ function QuestionBankPanel({
   onMoveScenario: (direction: 1 | -1) => void;
   onToggleRubric: () => void;
 }) {
+  const { language } = useLanguage();
+  const copy = workbenchCopy[language].battle;
+
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
       <section>
         <div className="mb-5 flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-              Battle Mode
+              {copy.eyebrow}
             </p>
             <h2 className="mt-2 font-display text-4xl leading-tight text-primary">
-              Review one clinical case at a time
+              {copy.title}
             </h2>
           </div>
           <div className="flex gap-2">
@@ -461,14 +468,14 @@ function QuestionBankPanel({
               onClick={() => onMoveScenario(-1)}
               className="border border-primary px-4 py-2 text-sm text-primary hover:bg-primary hover:text-white"
             >
-              Previous
+              {copy.previous}
             </button>
             <button
               type="button"
               onClick={() => onMoveScenario(1)}
               className="border border-primary px-4 py-2 text-sm text-primary hover:bg-primary hover:text-white"
             >
-              Next
+              {copy.next}
             </button>
           </div>
         </div>
@@ -477,14 +484,14 @@ function QuestionBankPanel({
           <div className="border-b border-line bg-wash px-5 py-4">
             <div className="flex flex-wrap gap-2">
               <span className="border border-line bg-background px-3 py-1 font-mono text-xs text-muted">
-                {activeScenario.category}
+                {scenarioCategory(activeScenario, language)}
               </span>
               <span className="border border-line bg-background px-3 py-1 font-mono text-xs text-muted">
                 {activeScenario.language}
               </span>
               {activeScenario.modality ? (
                 <span className="border border-primary bg-background px-3 py-1 font-mono text-xs text-primary">
-                  {activeScenario.modality}
+                  {scenarioModality(activeScenario, language)}
                 </span>
               ) : null}
               <span
@@ -494,25 +501,30 @@ function QuestionBankPanel({
                     : "border-line text-muted"
                 }`}
               >
-                {difficultyLabel(activeScenario)}
+                {difficultyLabel(activeScenario.difficulty, language)}
               </span>
             </div>
           </div>
 
           <div className="p-6 md:p-8">
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-muted">
-              Card {activeScenarioIndex + 1} of {scenarioData.length}
+              {language === "zh"
+                ? `${copy.card}${activeScenarioIndex + 1}${copy.of}${scenarioData.length}题`
+                : `${copy.card} ${activeScenarioIndex + 1} ${copy.of} ${scenarioData.length}`}
             </p>
             <h3 className="mt-3 max-w-4xl font-display text-4xl leading-tight text-primary">
-              {activeScenario.title}
+              {scenarioTitle(activeScenario, language)}
             </h3>
             <p className="mt-6 max-w-4xl text-lg leading-8 text-ink">
-              {activeScenario.vignette}
+              {scenarioVignette(activeScenario, language)}
             </p>
-            <ClinicalEvidencePanel evidence={activeScenario.evidence} />
+            <ClinicalEvidencePanel
+              evidence={translatedEvidence(activeScenario, language)}
+              language={language}
+            />
             <div className="mt-6 border-l-2 border-accent pl-5">
               <p className="font-display text-2xl leading-9 text-ink">
-                {activeScenario.query}
+                {scenarioQuery(activeScenario, language)}
               </p>
             </div>
 
@@ -522,19 +534,19 @@ function QuestionBankPanel({
                 onClick={onToggleRubric}
                 className="border border-primary bg-background px-4 py-3 text-sm text-primary hover:bg-primary hover:text-white"
               >
-                {showRubric ? "Hide rubric" : "Preview rubric"}
+                {showRubric ? copy.hideRubric : copy.previewRubric}
               </button>
               <Link
                 href={`/evaluate/${activeScenario.id}`}
                 className="border border-accent bg-accent px-4 py-3 text-center text-sm text-white hover:bg-background hover:text-accent"
               >
-                Start pairwise review
+                {copy.start}
               </Link>
               <Link
                 href={`/results/${activeScenario.id}`}
                 className="border border-line bg-background px-4 py-3 text-center text-sm text-muted hover:border-primary hover:text-primary"
               >
-                View mock result
+                {copy.result}
               </Link>
             </div>
           </div>
@@ -542,7 +554,7 @@ function QuestionBankPanel({
 
         {showRubric && (
           <section className="mt-5 border border-line bg-paper p-5">
-            <h3 className="font-display text-2xl text-primary">Rubric preview</h3>
+            <h3 className="font-display text-2xl text-primary">{copy.rubricPreview}</h3>
             <div className="mt-4 grid gap-3">
               {activeScenario.rubric.map((item) => (
                 <div
@@ -554,7 +566,9 @@ function QuestionBankPanel({
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <p className="leading-6 text-ink">{item.criterion}</p>
+                    <p className="leading-6 text-ink">
+                      {rubricCriterion(activeScenario, item.id, item.criterion, language)}
+                    </p>
                     <span
                       className={`font-mono text-sm ${
                         item.weight < 0 ? "text-accent" : "text-muted"
@@ -565,7 +579,7 @@ function QuestionBankPanel({
                   </div>
                   {item.isSafetyCritical && (
                     <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-accent">
-                      Safety-critical
+                      {copy.safetyCritical}
                     </p>
                   )}
                 </div>
@@ -578,7 +592,7 @@ function QuestionBankPanel({
       {/* Case library sidebar */}
       <aside className="space-y-4">
         <div className="border border-line bg-paper p-4">
-          <h3 className="font-display text-2xl text-primary">Case library</h3>
+          <h3 className="font-display text-2xl text-primary">{copy.library}</h3>
           <div className="mt-4 space-y-2">
             {scenarioData.map((scenario, index) => (
               <button
@@ -591,13 +605,15 @@ function QuestionBankPanel({
                     : "border-line bg-background text-ink hover:bg-wash"
                 }`}
               >
-                <span className="block text-sm leading-5">{scenario.title}</span>
+                <span className="block text-sm leading-5">
+                  {scenarioTitle(scenario, language)}
+                </span>
                 <span
                   className={`mt-2 block font-mono text-[11px] uppercase tracking-[0.12em] ${
                     index === activeScenarioIndex ? "text-white/70" : "text-muted"
                   }`}
                 >
-                  {scenario.language} · {scenario.modality ?? "Text"} · {difficultyLabel(scenario)}
+                  {scenario.language} · {scenarioModality(scenario, language)} · {difficultyLabel(scenario.difficulty, language)}
                 </span>
               </button>
             ))}
@@ -606,13 +622,12 @@ function QuestionBankPanel({
 
         <div className="border border-line bg-wash p-4">
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-            Evaluation flow
+            {copy.flow}
           </p>
           <ol className="mt-3 space-y-3 text-sm leading-6 text-muted">
-            <li>1. Select a case from the library.</li>
-            <li>2. Review the vignette and rubric criteria.</li>
-            <li>3. Compare two anonymized model responses.</li>
-            <li>4. Evidence feeds the safety-aware leaderboard.</li>
+            {copy.flowSteps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
           </ol>
         </div>
       </aside>
@@ -623,18 +638,20 @@ function QuestionBankPanel({
 // ── Leaderboard panel ──────────────────────────────────────────────────────
 
 function LeaderboardPanel({ rows }: { rows: LeaderboardData["highStakes"] }) {
+  const { language } = useLanguage();
+  const copy = workbenchCopy[language].leaderboard;
+
   return (
     <section>
       <div className="mb-5 border-b border-line pb-5">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-          Leaderboard
+          {copy.eyebrow}
         </p>
         <h2 className="mt-2 font-display text-4xl leading-tight text-primary">
-          Mock high-stakes ranking
+          {copy.title}
         </h2>
         <p className="mt-3 max-w-3xl leading-7 text-muted">
-          Placeholder data showing where TRUST-Med will surface aggregate
-          preference and safety failure counts after live evaluations begin.
+          {copy.intro}
         </p>
       </div>
 
@@ -642,11 +659,11 @@ function LeaderboardPanel({ rows }: { rows: LeaderboardData["highStakes"] }) {
         <table className="w-full min-w-[720px] border-collapse">
           <thead>
             <tr className="border-b border-line bg-wash text-left font-mono text-xs uppercase tracking-[0.14em] text-muted">
-              <th className="px-4 py-3 font-medium">Rank</th>
-              <th className="px-4 py-3 font-medium">Model</th>
-              <th className="px-4 py-3 text-right font-medium">BT Score</th>
-              <th className="px-4 py-3 text-right font-medium">Evaluations</th>
-              <th className="px-4 py-3 text-right font-medium">Safety Failures</th>
+              <th className="px-4 py-3 font-medium">{copy.rank}</th>
+              <th className="px-4 py-3 font-medium">{copy.model}</th>
+              <th className="px-4 py-3 text-right font-medium">{copy.score}</th>
+              <th className="px-4 py-3 text-right font-medium">{copy.evaluations}</th>
+              <th className="px-4 py-3 text-right font-medium">{copy.failures}</th>
             </tr>
           </thead>
           <tbody>
@@ -668,7 +685,7 @@ function LeaderboardPanel({ rows }: { rows: LeaderboardData["highStakes"] }) {
           href="/leaderboard"
           className="inline-flex border border-primary bg-primary px-5 py-3 text-sm text-white hover:bg-background hover:text-primary"
         >
-          Open full leaderboard
+          {copy.open}
         </Link>
       </div>
     </section>
@@ -678,24 +695,27 @@ function LeaderboardPanel({ rows }: { rows: LeaderboardData["highStakes"] }) {
 // ── About Us panel ─────────────────────────────────────────────────────────
 
 function AboutPanel() {
+  const { language } = useLanguage();
+  const copy = workbenchCopy[language].about;
+
   return (
     <section>
       <div className="mb-5 border-b border-line pb-5">
-        <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">About</p>
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
+          {copy.eyebrow}
+        </p>
         <h2 className="mt-2 font-display text-4xl leading-tight text-primary">
           TRUST-Med
         </h2>
         <p className="mt-2 font-mono text-xs uppercase tracking-[0.14em] text-muted">
-          Translational Real-world User-grounded Safety Testing for Medical AI
+          {copy.acronym}
         </p>
       </div>
 
       <div className="grid gap-5 xl:grid-cols-3">
         {([
-          ["Real clinical questions", "Cases reflect open-ended work clinicians actually do: treatment selection, documentation, patient communication, and uncertainty."],
-          ["Clinician-grounded preference", "Physicians compare anonymized model outputs directly, so evaluation is anchored in expert clinical judgment."],
-          ["Safety-aware rubrics", "Each preference is preceded by scenario-specific criteria, including explicit safety failures and quality signals."],
-        ] as [string, string][]).map(([title, body]) => (
+          ...copy.cards
+        ] as readonly (readonly [string, string])[]).map(([title, body]) => (
           <article key={title} className="border border-line bg-paper p-5">
             <h3 className="font-display text-2xl text-primary">{title}</h3>
             <p className="mt-3 leading-7 text-muted">{body}</p>
@@ -705,7 +725,7 @@ function AboutPanel() {
 
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         <div className="border border-line bg-paper p-6">
-          <h3 className="font-display text-2xl text-primary">Affiliation</h3>
+          <h3 className="font-display text-2xl text-primary">{copy.affiliation}</h3>
           <p className="mt-3 leading-7 text-muted">
             Johns Hopkins University — Systems Engineering
           </p>
@@ -715,11 +735,9 @@ function AboutPanel() {
         </div>
 
         <div className="border border-line bg-paper p-6">
-          <h3 className="font-display text-2xl text-primary">Positioning</h3>
+          <h3 className="font-display text-2xl text-primary">{copy.positioning}</h3>
           <p className="mt-3 leading-7 text-muted">
-            TRUST-Med extends arena-style model comparison for medicine by
-            combining clinician preference, rubric-based safety testing, and
-            explicit US-China jurisdictional context in English and Chinese.
+            {copy.positioningBody}
           </p>
         </div>
       </div>
@@ -729,7 +747,7 @@ function AboutPanel() {
           href="/about"
           className="inline-flex border border-primary bg-background px-5 py-3 text-sm text-primary hover:bg-primary hover:text-white"
         >
-          Read full research context →
+          {copy.readMore}
         </Link>
       </div>
     </section>
@@ -739,15 +757,17 @@ function AboutPanel() {
 // ── Search placeholder ─────────────────────────────────────────────────────
 
 function SearchPlaceholder() {
+  const { language } = useLanguage();
+  const copy = workbenchCopy[language].search;
+
   return (
     <section className="flex flex-col items-center justify-center py-24 text-center">
       <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-line bg-wash text-muted">
         <IconSearch />
       </div>
-      <h2 className="font-display text-3xl text-primary">Search</h2>
+      <h2 className="font-display text-3xl text-primary">{copy.title}</h2>
       <p className="mt-3 max-w-sm leading-7 text-muted">
-        Search across clinical scenarios, rubric criteria, and evaluation
-        results. Coming soon.
+        {copy.body}
       </p>
     </section>
   );

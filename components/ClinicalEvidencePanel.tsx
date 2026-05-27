@@ -1,6 +1,13 @@
 import type { ScenarioEvidence } from "@/types";
+import type { Language } from "@/components/LanguageProvider";
 
-function CtPreview() {
+function CtPreview({ language }: { language: Language }) {
+  const label = language === "zh" ? "充盈缺损" : "Filling defect";
+  const frame =
+    language === "zh"
+      ? "演示用CT肺动脉造影片段"
+      : "Illustrative CT angiography frame";
+
   return (
     <div className="relative aspect-[4/3] min-h-64 overflow-hidden border border-line bg-[#111]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,#d8d8d8_0,#9f9f9f_18%,#5c5c5c_34%,#1d1d1d_56%,#050505_74%)]" />
@@ -9,25 +16,36 @@ function CtPreview() {
       <div className="absolute left-[46%] top-[28%] h-[30%] w-[10%] rounded-full bg-white/35 blur-[1px]" />
       <div className="absolute right-[30%] top-[42%] h-10 w-16 rounded-full border-2 border-accent bg-accent/10" />
       <div className="absolute right-[23%] top-[38%] border border-accent bg-paper px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-accent">
-        Filling defect
+        {label}
       </div>
       <div className="absolute bottom-3 left-3 border border-white/25 bg-black/50 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-white/80">
-        Illustrative CT angiography frame
+        {frame}
       </div>
     </div>
   );
 }
 
-export function ClinicalEvidencePanel({ evidence }: { evidence?: ScenarioEvidence }) {
+export function ClinicalEvidencePanel({
+  evidence,
+  language = "en"
+}: {
+  evidence?: ScenarioEvidence;
+  language?: Language;
+}) {
   if (!evidence) {
     return null;
   }
+
+  const copy =
+    language === "zh"
+      ? { attached: "附加临床材料", focus: "测评重点" }
+      : { attached: "Attached clinical material", focus: "Evaluation focus" };
 
   return (
     <section className="mt-6 border border-line bg-background">
       <div className="border-b border-line bg-wash px-5 py-3">
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-accent">
-          Attached clinical material
+          {copy.attached}
         </p>
         <h3 className="mt-1 font-display text-2xl text-primary">
           {evidence.title}
@@ -37,9 +55,29 @@ export function ClinicalEvidencePanel({ evidence }: { evidence?: ScenarioEvidenc
         ) : null}
       </div>
 
+      {evidence.images?.length ? (
+        <div className="grid gap-4 border-b border-line p-5 lg:grid-cols-2">
+          {evidence.images.map((image) => (
+            <figure key={image.src} className="border border-line bg-paper p-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="w-full border border-line bg-white"
+              />
+              {image.caption ? (
+                <figcaption className="mt-2 text-sm leading-6 text-muted">
+                  {image.caption}
+                </figcaption>
+              ) : null}
+            </figure>
+          ))}
+        </div>
+      ) : null}
+
       <div className="grid gap-5 p-5 lg:grid-cols-[0.95fr_1.05fr]">
         {evidence.type === "ct" ? (
-          <CtPreview />
+          <CtPreview language={language} />
         ) : (
           <div className="border border-line bg-paper p-4">
             {evidence.type === "chat" ? (
@@ -75,7 +113,7 @@ export function ClinicalEvidencePanel({ evidence }: { evidence?: ScenarioEvidenc
 
         <div className="border border-line bg-paper p-4">
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-            Evaluation focus
+            {copy.focus}
           </p>
           <ul className="mt-3 space-y-2 leading-6 text-muted">
             {evidence.items?.map((item) => (
@@ -87,6 +125,19 @@ export function ClinicalEvidencePanel({ evidence }: { evidence?: ScenarioEvidenc
           {evidence.caption ? (
             <p className="mt-4 border-t border-line pt-3 text-sm leading-6 text-muted">
               {evidence.caption}
+            </p>
+          ) : null}
+          {evidence.sourceUrl ? (
+            <p className="mt-3 text-sm leading-6 text-muted">
+              Source:{" "}
+              <a
+                href={evidence.sourceUrl}
+                className="text-primary underline decoration-line underline-offset-4"
+                target="_blank"
+                rel="noreferrer"
+              >
+                DXY public case discussion
+              </a>
             </p>
           ) : null}
         </div>

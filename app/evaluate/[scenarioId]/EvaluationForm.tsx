@@ -3,7 +3,18 @@
 import { useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
+import { LanguageToggle, useLanguage } from "@/components/LanguageProvider";
 import type { Scenario } from "@/types";
+import {
+  difficultyLabel,
+  rubricCriterion,
+  scenarioCategory,
+  scenarioModality,
+  scenarioQuery,
+  scenarioTitle,
+  scenarioVignette,
+  translatedEvidence
+} from "@/lib/i18n";
 
 type Checks = Record<string, { a: boolean; b: boolean }>;
 
@@ -34,11 +45,10 @@ function reducer(state: Checks, action: Action): Checks {
 
 export function EvaluationForm({ scenario }: { scenario: Scenario }) {
   const router = useRouter();
-  const isChinese = scenario.language === "中文";
+  const { language } = useLanguage();
+  const isChinese = language === "zh";
   const copy = isChinese
     ? {
-        difficulty:
-          scenario.difficulty === "High-Stakes" ? "高风险" : "常规场景",
         modelA: "模型 A",
         modelB: "模型 B",
         rubricTitle: "场景专属测评量表",
@@ -59,7 +69,6 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
         submit: "提交测评"
       }
     : {
-        difficulty: scenario.difficulty,
         modelA: "Model A",
         modelB: "Model B",
         rubricTitle: "Scenario-specific rubric",
@@ -95,18 +104,21 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
 
   return (
     <main className="mx-auto max-w-content px-5 py-10">
+      <div className="mb-5 flex justify-end">
+        <LanguageToggle />
+      </div>
       <form onSubmit={submitEvaluation} className="space-y-8">
         <section className="border border-line bg-paper p-6">
           <div className="mb-5 flex flex-wrap gap-2">
             <span className="border border-line px-3 py-1 font-mono text-xs text-muted">
-              {scenario.category}
+              {scenarioCategory(scenario, language)}
             </span>
             <span className="border border-line px-3 py-1 font-mono text-xs text-muted">
               {scenario.language}
             </span>
             {scenario.modality ? (
               <span className="border border-primary px-3 py-1 font-mono text-xs text-primary">
-                {scenario.modality}
+                {scenarioModality(scenario, language)}
               </span>
             ) : null}
             <span
@@ -116,16 +128,21 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
                   : "border-line text-muted"
               }`}
             >
-              {copy.difficulty}
+              {difficultyLabel(scenario.difficulty, language)}
             </span>
           </div>
           <h1 className="font-display text-3xl leading-tight text-primary">
-            {scenario.title}
+            {scenarioTitle(scenario, language)}
           </h1>
-          <p className="mt-5 leading-8 text-ink">{scenario.vignette}</p>
-          <ClinicalEvidencePanel evidence={scenario.evidence} />
+          <p className="mt-5 leading-8 text-ink">
+            {scenarioVignette(scenario, language)}
+          </p>
+          <ClinicalEvidencePanel
+            evidence={translatedEvidence(scenario, language)}
+            language={language}
+          />
           <p className="mt-5 border-t border-line pt-5 font-display text-xl leading-8 text-ink">
-            {scenario.query}
+            {scenarioQuery(scenario, language)}
           </p>
         </section>
 
@@ -179,7 +196,7 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
                     }`}
                   >
                     <td className="py-4 pr-4 leading-6 text-ink">
-                      {item.criterion}
+                      {rubricCriterion(scenario, item.id, item.criterion, language)}
                       {item.isSafetyCritical ? (
                         <span className="ml-3 font-mono text-xs uppercase tracking-[0.12em] text-accent">
                           {copy.safetyCritical}
@@ -195,7 +212,12 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <input
-                        aria-label={`${copy.modelAMeets}: ${item.criterion}`}
+                        aria-label={`${copy.modelAMeets}: ${rubricCriterion(
+                          scenario,
+                          item.id,
+                          item.criterion,
+                          language
+                        )}`}
                         type="checkbox"
                         checked={checks[item.id].a}
                         onChange={() =>
@@ -209,7 +231,12 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <input
-                        aria-label={`${copy.modelBMeets}: ${item.criterion}`}
+                        aria-label={`${copy.modelBMeets}: ${rubricCriterion(
+                          scenario,
+                          item.id,
+                          item.criterion,
+                          language
+                        )}`}
                         type="checkbox"
                         checked={checks[item.id].b}
                         onChange={() =>

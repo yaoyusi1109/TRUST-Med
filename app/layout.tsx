@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, JetBrains_Mono, Newsreader } from "next/font/google";
+import { LanguageProvider } from "@/components/LanguageProvider";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
@@ -35,7 +36,7 @@ export default function RootLayout({
       <body
         className={`${fraunces.variable} ${newsreader.variable} ${jetbrains.variable} font-body antialiased h-full`}
       >
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );
