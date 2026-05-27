@@ -63,6 +63,27 @@ input[type="radio"] {
   box-shadow: none !important;
 }
 
+/* Form inputs */
+.input-base {
+  display: block;
+  width: 100%;
+  border: 1px solid #E5E0D5;
+  background: #FFFFFF;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: #1A1A1A;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input-base:focus {
+  border-color: #002D72;
+}
+.input-base::placeholder {
+  color: #5A5A5A;
+  opacity: 0.6;
+}
+
 /* Swipe card */
 .swipe-card {
   position: relative;
