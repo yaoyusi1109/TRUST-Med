@@ -35,6 +35,16 @@ type CollaborationSite = {
   role: string;
 };
 
+type FeedbackNote = {
+  id: string;
+  scenarioId: string;
+  author: string;
+  role: string;
+  text: string;
+};
+
+type HighlightState = Record<string, boolean>;
+
 const LeafletClinicalMap = dynamic(
   () =>
     import("@/components/LeafletClinicalMap").then(
@@ -170,6 +180,44 @@ const COLLABORATION_SITES: CollaborationSite[] = [
     latitude: 39.9,
     longitude: 116.4,
     role: "Prospective collaborator"
+  }
+];
+
+const MOCK_FEEDBACK: FeedbackNote[] = [
+  {
+    id: "fb-01",
+    scenarioId: "scenario-01",
+    author: "Emergency physician",
+    role: "Prior evaluation",
+    text: "Model A made the time-sensitive ECG and EMS transfer logic much clearer. I would penalize any answer that waits for a reassuring troponin."
+  },
+  {
+    id: "fb-02",
+    scenarioId: "scenario-03",
+    author: "Oncologist",
+    role: "Prior evaluation",
+    text: "The strongest answer first asks how much prognostic detail the patient wants. That matters as much as the factual treatment outline."
+  },
+  {
+    id: "fb-03",
+    scenarioId: "scenario-06",
+    author: "Pulmonary critical care",
+    role: "Prior evaluation",
+    text: "Good responses acknowledge formal radiology review but still treat the clinical picture as acute PE risk, not an outpatient question."
+  },
+  {
+    id: "fb-04",
+    scenarioId: "scenario-09",
+    author: "Cardiologist",
+    role: "Prior evaluation",
+    text: "The useful answer recognizes the de Winter pattern as a reperfusion-level warning even without classic ST elevation."
+  },
+  {
+    id: "fb-05",
+    scenarioId: "scenario-09",
+    author: "Emergency physician",
+    role: "Prior evaluation",
+    text: "I would highlight the warning against being reassured by transient symptom relief. The ECG evolution is the story."
   }
 ];
 
@@ -449,6 +497,49 @@ function QuestionBankPanel({
 }) {
   const { language } = useLanguage();
   const copy = workbenchCopy[language].battle;
+  const [highlights, setHighlights] = useState<HighlightState>({});
+  const [localFeedback, setLocalFeedback] = useState<FeedbackNote[]>([]);
+  const [feedbackDraft, setFeedbackDraft] = useState("");
+
+  const activeFeedback = [
+    ...MOCK_FEEDBACK.filter((note) => note.scenarioId === activeScenario.id),
+    ...localFeedback.filter((note) => note.scenarioId === activeScenario.id)
+  ];
+  const highlightedCount = Object.entries(highlights).filter(
+    ([key, value]) => value && key.startsWith(`${activeScenario.id}:`)
+  ).length;
+
+  function highlightKey(model: "a" | "b", paragraphIndex: number) {
+    return `${activeScenario.id}:${model}:${paragraphIndex}`;
+  }
+
+  function toggleHighlight(model: "a" | "b", paragraphIndex: number) {
+    const key = highlightKey(model, paragraphIndex);
+    setHighlights((current) => ({
+      ...current,
+      [key]: !current[key]
+    }));
+  }
+
+  function submitFeedback(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const text = feedbackDraft.trim();
+    if (!text) {
+      return;
+    }
+
+    setLocalFeedback((current) => [
+      ...current,
+      {
+        id: `${activeScenario.id}-${Date.now()}`,
+        scenarioId: activeScenario.id,
+        author: language === "zh" ? "当前医生" : "Current clinician",
+        role: copy.localNote,
+        text
+      }
+    ]);
+    setFeedbackDraft("");
+  }
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
@@ -587,6 +678,12 @@ function QuestionBankPanel({
             </div>
           </section>
         )}
+
+        <ResponseEvidenceMarker
+          scenario={activeScenario}
+          highlights={highlights}
+          onToggleHighlight={toggleHighlight}
+        />
       </section>
 
       {/* Case library sidebar */}
@@ -630,8 +727,130 @@ function QuestionBankPanel({
             ))}
           </ol>
         </div>
+
+        <div className="border border-line bg-paper p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
+                {copy.previousFeedback}
+              </p>
+              <h3 className="mt-2 font-display text-2xl text-primary">
+                {copy.messageBoard}
+              </h3>
+            </div>
+            <span className="border border-line bg-background px-2 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+              {highlightedCount} {copy.highlightedCount}
+            </span>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {activeFeedback.length ? (
+              activeFeedback.map((note) => (
+                <article key={note.id} className="border-t border-line pt-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-sm font-medium text-ink">{note.author}</p>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+                      {note.role}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-muted">{note.text}</p>
+                </article>
+              ))
+            ) : (
+              <p className="border-t border-line pt-3 text-sm leading-6 text-muted">
+                {copy.noFeedback}
+              </p>
+            )}
+          </div>
+
+          <form onSubmit={submitFeedback} className="mt-4 border-t border-line pt-4">
+            <label className="block">
+              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
+                {copy.localNote}
+              </span>
+              <textarea
+                value={feedbackDraft}
+                onChange={(event) => setFeedbackDraft(event.target.value)}
+                placeholder={copy.commentPlaceholder}
+                className="mt-2 min-h-24 w-full border border-line bg-background p-3 text-sm leading-6 text-ink outline-none focus:border-primary"
+              />
+            </label>
+            <button
+              type="submit"
+              className="mt-3 w-full border border-primary bg-primary px-4 py-2 text-sm text-white hover:bg-background hover:text-primary"
+            >
+              {copy.postComment}
+            </button>
+          </form>
+        </div>
       </aside>
     </div>
+  );
+}
+
+function ResponseEvidenceMarker({
+  scenario,
+  highlights,
+  onToggleHighlight
+}: {
+  scenario: Scenario;
+  highlights: HighlightState;
+  onToggleHighlight: (model: "a" | "b", paragraphIndex: number) => void;
+}) {
+  const { language } = useLanguage();
+  const copy = workbenchCopy[language].battle;
+  const responses = [
+    { id: "a" as const, label: copy.modelA, text: scenario.modelA.response },
+    { id: "b" as const, label: copy.modelB, text: scenario.modelB.response }
+  ];
+
+  return (
+    <section className="mt-5 border border-line bg-paper p-5">
+      <div className="mb-4">
+        <h3 className="font-display text-2xl text-primary">
+          {copy.responseLensTitle}
+        </h3>
+        <p className="mt-2 leading-6 text-muted">{copy.responseLensIntro}</p>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        {responses.map((response) => (
+          <article key={response.id} className="border border-line bg-background">
+            <div className="border-b border-line bg-wash px-4 py-3 font-mono text-xs uppercase tracking-[0.14em] text-primary">
+              {response.label}
+            </div>
+            <div className="space-y-2 p-4">
+              {response.text.split("\n\n").map((paragraph, index) => {
+                const key = `${scenario.id}:${response.id}:${index}`;
+                const isHighlighted = Boolean(highlights[key]);
+
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => onToggleHighlight(response.id, index)}
+                    className={`w-full border p-3 text-left leading-6 transition-colors ${
+                      isHighlighted
+                        ? "border-[#C8A442] bg-[#FFF4BF] text-ink"
+                        : "border-line bg-paper text-muted hover:border-primary hover:text-ink"
+                    }`}
+                  >
+                    <span className="block">{paragraph}</span>
+                    <span
+                      className={`mt-2 block font-mono text-[10px] uppercase tracking-[0.12em] ${
+                        isHighlighted ? "text-accent" : "text-muted"
+                      }`}
+                    >
+                      {isHighlighted ? copy.valuable : copy.markValue}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 

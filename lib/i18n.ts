@@ -54,14 +54,29 @@ export const workbenchCopy = {
       result: "View mock result",
       rubricPreview: "Rubric preview",
       safetyCritical: "Safety-critical",
+      responseLensTitle: "Response evidence marking",
+      responseLensIntro:
+        "Click any paragraph that contains a clinically valuable point. Highlights are local to this walkthrough.",
+      modelA: "Model A",
+      modelB: "Model B",
+      valuable: "Marked valuable",
+      markValue: "Click to highlight",
       library: "Case library",
       flow: "Evaluation flow",
       flowSteps: [
         "1. Select a case from the library.",
         "2. Review the vignette, attached material, and rubric criteria.",
-        "3. Compare two anonymized model responses.",
-        "4. Evidence feeds the safety-aware leaderboard."
-      ]
+        "3. Highlight valuable parts of each model response.",
+        "4. Compare two anonymized model responses.",
+        "5. Evidence feeds the safety-aware leaderboard."
+      ],
+      messageBoard: "Clinician feedback board",
+      previousFeedback: "Prior notes",
+      localNote: "Local demo note",
+      commentPlaceholder: "Add a short note about what changed your judgment...",
+      postComment: "Post note",
+      noFeedback: "No feedback for this case yet.",
+      highlightedCount: "highlighted"
     },
     leaderboard: {
       eyebrow: "Leaderboard",
@@ -146,14 +161,29 @@ export const workbenchCopy = {
       result: "查看模拟结果",
       rubricPreview: "量表预览",
       safetyCritical: "安全关键项",
+      responseLensTitle: "回答证据标注",
+      responseLensIntro:
+        "点击任意包含临床价值的段落进行高亮。高亮仅保存在本次浏览器演示中。",
+      modelA: "模型 A",
+      modelB: "模型 B",
+      valuable: "已标记有价值",
+      markValue: "点击高亮",
       library: "题库列表",
       flow: "测评流程",
       flowSteps: [
         "1. 从题库中选择一个临床场景。",
         "2. 阅读病例、附加材料与场景专属量表。",
-        "3. 比较两个匿名模型回答。",
-        "4. 测评证据进入安全感知排行榜。"
-      ]
+        "3. 高亮每个模型回答中有价值的部分。",
+        "4. 比较两个匿名模型回答。",
+        "5. 测评证据进入安全感知排行榜。"
+      ],
+      messageBoard: "医生反馈留言板",
+      previousFeedback: "既往反馈",
+      localNote: "本地演示留言",
+      commentPlaceholder: "写下哪一点影响了你的判断...",
+      postComment: "发布留言",
+      noFeedback: "该场景暂无反馈。",
+      highlightedCount: "处已高亮"
     },
     leaderboard: {
       eyebrow: "排行榜",
