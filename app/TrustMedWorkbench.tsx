@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
 import { LanguageToggle, useLanguage } from "@/components/LanguageProvider";
 import scenarios from "@/data/scenarios.json";
@@ -485,6 +485,123 @@ function MapBalance({
   );
 }
 
+// ── Swipe card wrapper ─────────────────────────────────────────────────────
+
+type SwipePhase = "entering" | "idle" | "dragging" | "exiting-left" | "exiting-right";
+
+function SwipeCard({
+  children,
+  onSwipeLeft,
+  onSwipeRight,
+}: {
+  children: React.ReactNode;
+  onSwipeLeft: () => void;
+  onSwipeRight: () => void;
+}) {
+  const [dx, setDx] = useState(0);
+  const [phase, setPhase] = useState<SwipePhase>("entering");
+  const startXRef = useRef(0);
+  const didDragRef = useRef(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setPhase("idle"), 280);
+    return () => clearTimeout(t);
+  }, []);
+
+  function handlePointerDown(e: React.PointerEvent) {
+    if (phase !== "idle") return;
+    setPhase("dragging");
+    startXRef.current = e.clientX;
+    setDx(0);
+    didDragRef.current = false;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  function handlePointerMove(e: React.PointerEvent) {
+    if (phase !== "dragging") return;
+    const newDx = e.clientX - startXRef.current;
+    if (Math.abs(newDx) > 8) didDragRef.current = true;
+    setDx(newDx);
+  }
+
+  function handlePointerUp() {
+    if (phase !== "dragging") return;
+    if (Math.abs(dx) > 120) {
+      const dir = dx > 0 ? "right" : "left";
+      setPhase(dir === "right" ? "exiting-right" : "exiting-left");
+      setTimeout(() => {
+        if (dir === "right") onSwipeRight();
+        else onSwipeLeft();
+      }, 280);
+    } else {
+      setDx(0);
+      setPhase("idle");
+    }
+  }
+
+  function handleClickCapture(e: React.MouseEvent) {
+    if (didDragRef.current) {
+      e.stopPropagation();
+      e.preventDefault();
+      didDragRef.current = false;
+    }
+  }
+
+  const translateX =
+    phase === "exiting-left" ? -700 :
+    phase === "exiting-right" ? 700 :
+    phase === "entering" ? 60 :
+    dx;
+
+  const rotate = phase === "dragging" || phase === "exiting-left" || phase === "exiting-right"
+    ? dx * 0.04
+    : 0;
+
+  const opacity =
+    phase === "exiting-left" || phase === "exiting-right" ? 0 :
+    phase === "entering" ? 0 :
+    1;
+
+  const transition =
+    phase === "dragging"
+      ? "none"
+      : "transform 0.28s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.28s ease";
+
+  const rightOpacity = dx > 30 ? Math.min(1, (dx - 30) / 90) : 0;
+  const leftOpacity  = dx < -30 ? Math.min(1, (-dx - 30) / 90) : 0;
+
+  return (
+    <div
+      className={`swipe-card ${phase === "dragging" ? "swipe-card-grabbing" : "swipe-card-grab"}`}
+      style={{
+        "--sc-x": `${translateX}px`,
+        "--sc-rot": `${rotate}deg`,
+        "--sc-opacity": `${opacity}`,
+        "--sc-transition": transition,
+        "--sc-next-op": `${rightOpacity}`,
+        "--sc-prev-op": `${leftOpacity}`,
+      } as React.CSSProperties}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      onClickCapture={handleClickCapture}
+    >
+      <div className="swipe-indicator swipe-indicator-next">
+        <span className="swipe-badge-next border-2 border-green-500 bg-white/90 px-3 py-1 font-mono text-sm font-bold uppercase tracking-wider text-green-600">
+          Next →
+        </span>
+      </div>
+      <div className="swipe-indicator swipe-indicator-prev">
+        <span className="swipe-badge-prev border-2 border-red-400 bg-white/90 px-3 py-1 font-mono text-sm font-bold uppercase tracking-wider text-red-500">
+          ← Prev
+        </span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 // ── Battle Mode panel ──────────────────────────────────────────────────────
 
 function QuestionBankPanel({
@@ -578,6 +695,11 @@ function QuestionBankPanel({
           </div>
         </div>
 
+        <SwipeCard
+          key={activeScenario.id}
+          onSwipeLeft={() => onMoveScenario(-1)}
+          onSwipeRight={() => onMoveScenario(1)}
+        >
         <article className="border border-line bg-paper">
           <div className="border-b border-line bg-wash px-5 py-4">
             <div className="flex flex-wrap gap-2">
@@ -649,6 +771,7 @@ function QuestionBankPanel({
             </div>
           </div>
         </article>
+        </SwipeCard>
 
         {showRubric && (
           <section className="mt-5 border border-line bg-paper p-5">

@@ -62,3 +62,40 @@ input[type="radio"] {
   border-radius: 2px !important;
   box-shadow: none !important;
 }
+
+/* Swipe card */
+.swipe-card {
+  position: relative;
+  transform: translateX(var(--sc-x, 0px)) rotate(var(--sc-rot, 0deg));
+  opacity: var(--sc-opacity, 1);
+  transition: var(--sc-transition, none);
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.swipe-card-grab  { cursor: grab; }
+.swipe-card-grabbing { cursor: grabbing; }
+
+.swipe-indicator {
+  position: absolute;
+  top: 16px;
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity 0.08s;
+}
+.swipe-indicator-next {
+  left: 20px;
+  opacity: var(--sc-next-op, 0);
+}
+.swipe-indicator-prev {
+  right: 20px;
+  opacity: var(--sc-prev-op, 0);
+}
+.swipe-badge-next {
+  display: inline-block;
+  transform: rotate(-12deg);
+}
+.swipe-badge-prev {
+  display: inline-block;
+  transform: rotate(12deg);
+}
