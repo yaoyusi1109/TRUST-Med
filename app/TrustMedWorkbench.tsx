@@ -500,8 +500,14 @@ function SwipeCard({
 }) {
   const [dx, setDx] = useState(0);
   const [phase, setPhase] = useState<SwipePhase>("entering");
-  const startXRef = useRef(0);
-  const didDragRef = useRef(false);
+
+  // Refs avoid stale-closure bugs in pointer event handlers
+  const startXRef    = useRef(0);
+  const dxRef        = useRef(0);
+  const pointerDownRef = useRef(false);   // pointer is currently pressed
+  const draggingRef  = useRef(false);     // movement exceeded threshold
+  const didDragRef   = useRef(false);     // suppress next click if we dragged
+  const exitingRef   = useRef(false);     // exit animation in progress
 
   useEffect(() => {
     const t = setTimeout(() => setPhase("idle"), 280);
@@ -509,34 +515,58 @@ function SwipeCard({
   }, []);
 
   function handlePointerDown(e: React.PointerEvent) {
-    if (phase !== "idle") return;
-    setPhase("dragging");
-    startXRef.current = e.clientX;
-    setDx(0);
+    if (exitingRef.current) return;
+    pointerDownRef.current = true;
+    draggingRef.current = false;
     didDragRef.current = false;
-    e.currentTarget.setPointerCapture(e.pointerId);
+    startXRef.current = e.clientX;
+    dxRef.current = 0;
+    // No setPointerCapture yet — that would swallow child click events.
+    // We capture only after the drag threshold is confirmed in pointermove.
   }
 
   function handlePointerMove(e: React.PointerEvent) {
-    if (phase !== "dragging") return;
+    if (!pointerDownRef.current) return;
     const newDx = e.clientX - startXRef.current;
-    if (Math.abs(newDx) > 8) didDragRef.current = true;
-    setDx(newDx);
+    if (!draggingRef.current && Math.abs(newDx) > 8) {
+      // Confirmed drag — capture pointer now so fast swipes don't escape
+      draggingRef.current = true;
+      didDragRef.current = true;
+      setPhase("dragging");
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+    if (draggingRef.current) {
+      dxRef.current = newDx;
+      setDx(newDx);
+    }
   }
 
   function handlePointerUp() {
-    if (phase !== "dragging") return;
-    if (Math.abs(dx) > 120) {
-      const dir = dx > 0 ? "right" : "left";
+    pointerDownRef.current = false;
+    if (!draggingRef.current) return; // was a tap — let child onClick fire
+    draggingRef.current = false;
+    const d = dxRef.current;
+    if (Math.abs(d) > 120) {
+      const dir = d > 0 ? "right" : "left";
+      exitingRef.current = true;
       setPhase(dir === "right" ? "exiting-right" : "exiting-left");
       setTimeout(() => {
         if (dir === "right") onSwipeRight();
         else onSwipeLeft();
       }, 280);
     } else {
+      dxRef.current = 0;
       setDx(0);
       setPhase("idle");
     }
+  }
+
+  function handlePointerCancel() {
+    pointerDownRef.current = false;
+    draggingRef.current = false;
+    dxRef.current = 0;
+    setDx(0);
+    if (!exitingRef.current) setPhase("idle");
   }
 
   function handleClickCapture(e: React.MouseEvent) {
@@ -584,7 +614,7 @@ function SwipeCard({
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
       onClickCapture={handleClickCapture}
     >
       <div className="swipe-indicator swipe-indicator-next">
