@@ -218,6 +218,13 @@ const MOCK_FEEDBACK: FeedbackNote[] = [
     author: "Emergency physician",
     role: "Prior evaluation",
     text: "I would highlight the warning against being reassured by transient symptom relief. The ECG evolution is the story."
+  },
+  {
+    id: "fb-06",
+    scenarioId: "scenario-10",
+    author: "Pediatric surgeon",
+    role: "Prior evaluation",
+    text: "The key is avoiding anchoring: confirmed appendicitis does not make a new postoperative groin pain safe. Examine the testes immediately."
   }
 ];
 
