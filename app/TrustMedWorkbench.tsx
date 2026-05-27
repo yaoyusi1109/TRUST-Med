@@ -98,7 +98,7 @@ function IconSearch() {
 const NAV_ITEMS: { id: SectionId; label: string; Icon: () => React.ReactElement }[] = [
   { id: "about",       label: "About Us",    Icon: IconInfo     },
   { id: "battle",      label: "Battle Mode", Icon: IconSwords   },
-  { id: "map",         label: "Clinical Map", Icon: IconMap     },
+  { id: "map",         label: "Clinical Atlas", Icon: IconMap   },
   { id: "leaderboard", label: "Leaderboard", Icon: IconBarChart },
   { id: "search",      label: "Search",      Icon: IconSearch   },
 ];
@@ -258,7 +258,7 @@ export function TrustMedWorkbench() {
   );
 }
 
-// ── Clinical Map panel ─────────────────────────────────────────────────────
+// ── Clinical Atlas panel ───────────────────────────────────────────────────
 
 function ClinicalMapPanel() {
   const totalClinicians = COLLABORATION_SITES.reduce(
@@ -276,15 +276,16 @@ function ClinicalMapPanel() {
     <section>
       <div className="mb-5 border-b border-line pb-5">
         <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
-          Clinical Map
+          Clinical Atlas
         </p>
         <h2 className="mt-2 font-display text-4xl leading-tight text-primary">
-          A living map of participating clinicians
+          Consent-based collaboration geography
         </h2>
         <p className="mt-3 max-w-3xl leading-7 text-muted">
-          When clinicians join TRUST-Med, their institution or region can be
-          highlighted on this local collaboration map. No third-party visitor
-          script is loaded; the demo uses static, consent-oriented site data.
+          This panel shows where participating clinical cohorts can be
+          represented after consent. It is not a visitor tracker: the basemap,
+          country boundaries, site markers, and collaboration line are all
+          rendered locally in Leaflet.
         </p>
       </div>
 
@@ -293,18 +294,27 @@ function ClinicalMapPanel() {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
             <div>
               <h3 className="font-display text-2xl text-primary">
-                TRUST-Med collaboration footprint
+                Natural Earth clinical atlas
               </h3>
               <p className="mt-1 text-sm text-muted">
-                Leaflet map with local Natural Earth country boundaries.
+                Real country boundaries rendered locally with Leaflet.
               </p>
             </div>
             <span className="border border-line bg-background px-3 py-1 font-mono text-xs uppercase tracking-[0.12em] text-muted">
-              Leaflet + Natural Earth v2
+              Leaflet real basemap 2026-05-27
             </span>
           </div>
 
-          <LocalClinicalMap />
+          <div className="relative mt-5 overflow-hidden border border-line bg-[#F7F3EA]">
+            <LeafletClinicalMap sites={COLLABORATION_SITES} />
+            <div className="border-t border-line bg-background/90 px-4 py-3">
+              <p className="text-sm leading-6 text-muted">
+                Natural Earth country boundaries rendered locally in Leaflet.
+                No IP address, browser fingerprint, or visit event is sent to a
+                third-party map service.
+              </p>
+            </div>
+          </div>
         </div>
 
         <aside className="space-y-4">
@@ -328,12 +338,12 @@ function ClinicalMapPanel() {
               Map source
             </p>
             <h3 className="mt-2 font-display text-2xl text-primary">
-              Local clinical atlas
+              Local Natural Earth data
             </h3>
             <p className="mt-3 leading-7 text-muted">
-              The map is rendered with Leaflet inside the app, using local
-              vector regions and site markers. No external tile server or
-              visitor tracking script is loaded.
+              The map uses the `world-atlas` Natural Earth dataset bundled with
+              the app. Leaflet handles interaction, but no external tile server
+              or visitor tracking script is loaded.
             </p>
           </div>
 
@@ -388,21 +398,6 @@ function ClinicalMapPanel() {
         </aside>
       </div>
     </section>
-  );
-}
-
-function LocalClinicalMap() {
-  return (
-    <div className="relative mt-5 overflow-hidden border border-line bg-[#F7F3EA]">
-      <LeafletClinicalMap sites={COLLABORATION_SITES} />
-      <div className="border-t border-line bg-background/90 px-4 py-3">
-        <p className="text-sm leading-6 text-muted">
-          Natural Earth country boundaries rendered locally in Leaflet. No IP
-          address, browser fingerprint, or visit event is sent to a third-party
-          map service.
-        </p>
-      </div>
-    </div>
   );
 }
 

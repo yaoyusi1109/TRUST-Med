@@ -25,11 +25,11 @@ type CollaborationSite = {
 };
 
 const regionStyle: PathOptions = {
-  color: "#D5CBB8",
-  fillColor: "#E8E1D2",
-  fillOpacity: 1,
+  color: "#CFC6B5",
+  fillColor: "#E3DCCF",
+  fillOpacity: 0.96,
   opacity: 1,
-  weight: 1
+  weight: 0.75
 };
 
 const topology = worldAtlas as unknown as Topology<{
@@ -79,7 +79,8 @@ export function LeafletClinicalMap({
     <MapContainer
       attributionControl={false}
       center={[24, 20]}
-      className="h-[440px] w-full bg-[#F7F3EA]"
+      className="h-[440px] w-full bg-[#F8F4EA]"
+      key="trust-med-natural-earth-leaflet-2026-05-27"
       maxBounds={[
         [-70, -180],
         [84, 180]
@@ -99,7 +100,11 @@ export function LeafletClinicalMap({
         />
       ))}
 
-      <GeoJSON data={countries} style={() => regionStyle} />
+      <GeoJSON
+        data={countries}
+        key="natural-earth-countries-110m-2026-05-27"
+        style={() => regionStyle}
+      />
 
       {collaborationLine.length > 0 ? (
         <Polyline
