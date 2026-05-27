@@ -3,6 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
+import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
 import scenarios from "@/data/scenarios.json";
 import leaderboard from "@/data/leaderboard.json";
 import type { LeaderboardData, Scenario } from "@/types";
@@ -481,6 +482,11 @@ function QuestionBankPanel({
               <span className="border border-line bg-background px-3 py-1 font-mono text-xs text-muted">
                 {activeScenario.language}
               </span>
+              {activeScenario.modality ? (
+                <span className="border border-primary bg-background px-3 py-1 font-mono text-xs text-primary">
+                  {activeScenario.modality}
+                </span>
+              ) : null}
               <span
                 className={`border px-3 py-1 font-mono text-xs ${
                   activeScenario.difficulty === "High-Stakes"
@@ -503,6 +509,7 @@ function QuestionBankPanel({
             <p className="mt-6 max-w-4xl text-lg leading-8 text-ink">
               {activeScenario.vignette}
             </p>
+            <ClinicalEvidencePanel evidence={activeScenario.evidence} />
             <div className="mt-6 border-l-2 border-accent pl-5">
               <p className="font-display text-2xl leading-9 text-ink">
                 {activeScenario.query}
@@ -590,7 +597,7 @@ function QuestionBankPanel({
                     index === activeScenarioIndex ? "text-white/70" : "text-muted"
                   }`}
                 >
-                  {scenario.language} · {difficultyLabel(scenario)}
+                  {scenario.language} · {scenario.modality ?? "Text"} · {difficultyLabel(scenario)}
                 </span>
               </button>
             ))}

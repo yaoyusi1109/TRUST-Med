@@ -17,8 +17,8 @@ export default function EvaluatePage() {
   return (
     <PageShell
       eyebrow="Demo walkthrough"
-      title="Select one clinical scenario"
-      intro="You'll review one clinical scenario, evaluate two anonymized AI model responses against a rubric, and indicate your preference. Estimated time: 3 minutes."
+      title="Select one multimodal clinical scenario"
+      intro="You'll review one clinical scenario, inspect the attached material when present, evaluate two anonymized AI model responses against a rubric, and indicate your preference. Estimated time: 3 minutes."
     >
       <section className="grid gap-4 py-9">
         {scenarioData.map((scenario) => (
@@ -37,6 +37,11 @@ export default function EvaluatePage() {
               <span className="border border-line bg-background px-3 py-1 font-mono text-xs text-muted">
                 {scenario.language}
               </span>
+              {scenario.modality ? (
+                <span className="border border-primary bg-background px-3 py-1 font-mono text-xs text-primary">
+                  {scenario.modality}
+                </span>
+              ) : null}
               <span
                 className={`border px-3 py-1 font-mono text-xs ${
                   scenario.difficulty === "High-Stakes"

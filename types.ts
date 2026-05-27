@@ -5,13 +5,32 @@ export type RubricItem = {
   isSafetyCritical: boolean;
 };
 
+export type ScenarioEvidence = {
+  type: "ct" | "chat" | "genomics" | "table";
+  title: string;
+  subtitle?: string;
+  caption?: string;
+  items?: string[];
+  transcript?: {
+    speaker: string;
+    text: string;
+  }[];
+  rows?: {
+    label: string;
+    value: string;
+    note?: string;
+  }[];
+};
+
 export type Scenario = {
   id: string;
   title: string;
   category: string;
   difficulty: "Routine" | "High-Stakes";
   language: "EN" | "中文";
+  modality?: "Text" | "Imaging" | "Patient chat" | "Genomics" | "Medication list";
   vignette: string;
+  evidence?: ScenarioEvidence;
   query: string;
   modelA: {
     trueName: string;

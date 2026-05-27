@@ -2,6 +2,7 @@
 
 import { useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
 import type { Scenario } from "@/types";
 
 type Checks = Record<string, { a: boolean; b: boolean }>;
@@ -103,6 +104,11 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
             <span className="border border-line px-3 py-1 font-mono text-xs text-muted">
               {scenario.language}
             </span>
+            {scenario.modality ? (
+              <span className="border border-primary px-3 py-1 font-mono text-xs text-primary">
+                {scenario.modality}
+              </span>
+            ) : null}
             <span
               className={`border px-3 py-1 font-mono text-xs ${
                 scenario.difficulty === "High-Stakes"
@@ -117,6 +123,7 @@ export function EvaluationForm({ scenario }: { scenario: Scenario }) {
             {scenario.title}
           </h1>
           <p className="mt-5 leading-8 text-ink">{scenario.vignette}</p>
+          <ClinicalEvidencePanel evidence={scenario.evidence} />
           <p className="mt-5 border-t border-line pt-5 font-display text-xl leading-8 text-ink">
             {scenario.query}
           </p>
