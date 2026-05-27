@@ -685,9 +685,9 @@ function AboutPanel() {
 
       <div className="grid gap-5 xl:grid-cols-3">
         {([
-          ["Clinician-as-judge", "Real physicians evaluate model behavior. The system does not outsource clinical judgment to another LLM."],
-          ["Cross-jurisdictional", "US and Chinese clinical norms are treated as explicit comparison contexts, not noise to average away."],
-          ["Rubric-augmented pairwise", "Each case has safety and quality criteria that clinicians complete before choosing between two model outputs."],
+          ["Real clinical questions", "Cases reflect open-ended work clinicians actually do: treatment selection, documentation, patient communication, and uncertainty."],
+          ["Clinician-grounded preference", "Physicians compare anonymized model outputs directly, so evaluation is anchored in expert clinical judgment."],
+          ["Safety-aware rubrics", "Each preference is preceded by scenario-specific criteria, including explicit safety failures and quality signals."],
         ] as [string, string][]).map(([title, body]) => (
           <article key={title} className="border border-line bg-paper p-5">
             <h3 className="font-display text-2xl text-primary">{title}</h3>
@@ -710,9 +710,9 @@ function AboutPanel() {
         <div className="border border-line bg-paper p-6">
           <h3 className="font-display text-2xl text-primary">Positioning</h3>
           <p className="mt-3 leading-7 text-muted">
-            Where HealthBench uses GPT-4 as judge and MedArena uses a single
-            preference vote, TRUST-Med combines clinician-written rubrics with
-            pairwise preference across two clinical jurisdictions.
+            TRUST-Med extends arena-style model comparison for medicine by
+            combining clinician preference, rubric-based safety testing, and
+            explicit US-China jurisdictional context in English and Chinese.
           </p>
         </div>
       </div>

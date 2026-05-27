@@ -14,8 +14,8 @@ export default function AboutPage() {
   return (
     <PageShell
       eyebrow="About the research"
-      title="Clinician-led evidence for medical AI safety"
-      intro="TRUST-Med is a research demo for Translational Real-world User-grounded Safety Testing for Medical AI."
+      title="Clinician-grounded evaluation for medical LLMs"
+      intro="TRUST-Med (Translational Real-world User-grounded Safety Testing for Medical AI) is an interactive research platform for testing medical LLMs on the kinds of open-ended clinical questions physicians actually ask: uncertain, multi-step, context-dependent, and shaped by local standards of care."
     >
       <section className="grid gap-10 py-10 md:grid-cols-[0.9fr_1.1fr]">
         <aside className="border border-line bg-paper p-6">
@@ -34,46 +34,98 @@ export default function AboutPage() {
         <div className="space-y-8">
           <section>
             <h2 className="font-display text-3xl text-primary">
-              Project motivation
+              Why Current Benchmarks Fall Short
             </h2>
             <div className="mt-4 space-y-4 leading-8 text-muted">
               <p>
-                Medical LLM evaluation remains too distant from the decisions
-                clinicians actually face. USMLE-style benchmarks and multiple
-                choice exams measure useful knowledge, but they are decoupled
-                from messy patient communication, incomplete information,
-                triage urgency, medication safety, and local practice norms.
+                Large language models are moving into clinician workflows,
+                including decision support, medical education, documentation,
+                translation, and patient communication. Yet many medical LLM
+                evaluations still rely on static, templated benchmarks derived
+                from multiple-choice exams such as MedQA, MedMCQA, and MMLU.
+                These datasets are useful for measuring foundational knowledge,
+                but they do not capture the open-ended, dynamic, and
+                context-sensitive nature of real clinical practice.
               </p>
               <p>
-                Newer rubric-based work such as HealthBench improves the shape
-                of evaluation, but it relies on GPT-4.1 as the judge rather
-                than real clinicians. That design is scalable, yet it leaves
-                open the question of whether clinical users agree with the
-                scoring logic in high-stakes settings.
+                In practice, clinicians rarely ask only for a single factual
+                answer. They ask about treatment selection under uncertainty,
+                evolving diagnostic workups, patient-facing explanations,
+                discharge documentation, guideline interpretation, and
+                medication safety. A response can be factually plausible yet
+                clinically unhelpful if it misses urgency, ignores local
+                standards, communicates poorly, or fails to surface a safety
+                constraint.
               </p>
               <p>
-                Existing preference platforms also rarely separate clinical
-                jurisdictions. TRUST-Med is designed to compare how physicians
-                in US and Chinese settings evaluate the same model outputs
-                under different guidelines, languages, medication availability,
-                and institutional norms.
+                Newer open-ended and rubric-based frameworks are an important
+                step forward, but many still use LLM-as-judge evaluation or
+                fixed task sets. That leaves two unresolved questions: whether
+                automated scores match the preferences of practicing clinicians,
+                and whether a benchmark built in one clinical system transfers
+                cleanly to another. TRUST-Med is designed around those gaps.
               </p>
             </div>
           </section>
 
           <section>
             <h2 className="font-display text-3xl text-primary">
-              Method overview
+              What TRUST-Med Measures
             </h2>
-            <p className="mt-4 leading-8 text-muted">
-              Each evaluation starts with a clinical scenario and two
-              anonymized model responses. The clinician completes a
-              scenario-specific rubric with positive quality criteria and
-              negative safety-failure criteria, then submits a pairwise
-              preference. Aggregated results can support Bradley-Terry ranking,
-              safety failure analysis, and cross-site comparison without using
-              real patient data in this demo.
-            </p>
+            <div className="mt-4 space-y-4 leading-8 text-muted">
+              <p>
+                TRUST-Med adapts arena-style head-to-head comparison for
+                clinical medicine. A clinician reviews a realistic medical
+                scenario, compares two anonymized model responses, and selects
+                the response they would prefer in practice. The goal is not to
+                reward exam-style correctness alone, but to measure clinical
+                utility across reasoning quality, safety awareness, clarity,
+                completeness, and appropriateness for the specific case.
+              </p>
+              <p>
+                Unlike a simple preference vote, each TRUST-Med case includes a
+                scenario-specific rubric that clinicians complete before making
+                the final pairwise choice. Rubric items capture both positive
+                quality criteria and explicit safety failures, allowing the
+                study to distinguish clinical substance from presentation style,
+                response length, or formatting polish.
+              </p>
+              <p>
+                The platform is also cross-jurisdictional by design. The same
+                evaluation logic can be applied across US and Chinese clinical
+                contexts, in English and Chinese, so that differences in
+                guidelines, formularies, documentation norms, and patient
+                communication expectations become measurable signals rather
+                than background noise. Aggregated evaluations can then support
+                Bradley-Terry model ranking, safety-failure analysis, and
+                subgroup comparison across sites.
+              </p>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="font-display text-3xl text-primary">
+              Research Positioning
+            </h2>
+            <div className="mt-4 space-y-4 leading-8 text-muted">
+              <p>
+                TRUST-Med builds on the insight behind Chatbot Arena and
+                clinician preference platforms such as MedArena: model quality
+                should be tested on user-generated, real-world questions rather
+                than only on static answer keys. It extends that idea for
+                medical safety testing by adding structured rubrics, explicit
+                safety-critical criteria, and cross-site comparison between
+                Johns Hopkins and Nanjing University collaborators.
+              </p>
+              <p>
+                This demo is illustrative and does not collect clinical data.
+                Its purpose is to make the proposed workflow concrete for
+                collaborators: clinicians judge model outputs, rubrics capture
+                clinically meaningful failure modes, and the resulting
+                preference data can be analyzed as evidence about medical LLM
+                utility rather than as a generic AI leaderboard.
+              </p>
+            </div>
           </section>
 
           <section>
