@@ -1,6 +1,7 @@
 "use client";
 
 import { PageShell } from "@/components/PageShell";
+import { AffiliationLogos } from "@/components/AffiliationLogos";
 import { LanguageToggle, useLanguage } from "@/components/LanguageProvider";
 
 const references = [
@@ -96,14 +97,11 @@ export default function AboutPage() {
       <section className="grid gap-10 py-10 md:grid-cols-[0.9fr_1.1fr]">
         <aside className="border border-line bg-paper p-6">
           <h2 className="font-display text-2xl text-primary">{copy.affiliation}</h2>
-          <p className="mt-4 leading-7 text-muted">
-            Johns Hopkins University, Systems Engineering
-          </p>
-          <p className="mt-2 leading-7 text-muted">
-            Nanjing University, Computer Science
-          </p>
+          <div className="mt-5">
+            <AffiliationLogos />
+          </div>
           <p className="mt-6 font-mono text-sm text-accent">
-            [your-email@jhu.edu]
+            yyao85@jh.edu
           </p>
         </aside>
 
