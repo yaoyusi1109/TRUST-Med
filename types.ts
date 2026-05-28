@@ -87,6 +87,15 @@ export type ConceptNode = {
   children?: ConceptNode[];
 };
 
+export type ExampleDiagnosisCandidate = {
+  id: string;
+  name: string;
+  status: "more_likely" | "less_likely" | "must_not_miss";
+  note?: string;
+  relatedConceptIds?: string[];
+  relatedSegmentIds?: string[];
+};
+
 export type ExampleCaseAudit = {
   id: string;
   title: string;
@@ -94,6 +103,7 @@ export type ExampleCaseAudit = {
   disclaimer: string;
   segments: ExampleSegment[];
   diagnosticOptions: string[];
+  diagnosticCandidates?: ExampleDiagnosisCandidate[];
 };
 
 export type ExampleResponse = {

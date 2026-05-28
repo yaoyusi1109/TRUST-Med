@@ -90,6 +90,48 @@
       "Bacterial pneumonia",
       "Influenza-like illness",
       "Pulmonary embolism"
+    ],
+    "diagnosticCandidates": [
+      {
+        "id": "dx-viral-uri",
+        "name": "Viral upper respiratory infection",
+        "status": "more_likely",
+        "note": "Mock candidate linked to viral syndrome features and respiratory infection concepts.",
+        "relatedConceptIds": ["respiratory-infection", "viral-uri", "common-cold"],
+        "relatedSegmentIds": ["cc-1", "hpi-1", "hpi-3", "vitals-1", "imaging-1", "negative-1"]
+      },
+      {
+        "id": "dx-asthma-trigger",
+        "name": "Asthma exacerbation triggered by viral illness",
+        "status": "more_likely",
+        "note": "Mock candidate linked to wheeze, asthma history, and improvement after inhaler use.",
+        "relatedConceptIds": ["viral-uri", "common-cold"],
+        "relatedSegmentIds": ["pmh-1", "med-1", "exam-1", "missing-1"]
+      },
+      {
+        "id": "dx-bacterial-pneumonia",
+        "name": "Bacterial pneumonia",
+        "status": "less_likely",
+        "note": "Mock candidate retained because pneumonia is a common alternative but current radiograph and vitals argue against it.",
+        "relatedConceptIds": ["respiratory-infection", "bacterial-pneumonia"],
+        "relatedSegmentIds": ["vitals-1", "labs-1", "imaging-1", "negative-1"]
+      },
+      {
+        "id": "dx-influenza-like",
+        "name": "Influenza-like illness",
+        "status": "less_likely",
+        "note": "Mock candidate linked to fever/fatigue but moderated by negative point-of-care testing.",
+        "relatedConceptIds": ["viral-uri", "influenza-like-illness"],
+        "relatedSegmentIds": ["hpi-1", "labs-1"]
+      },
+      {
+        "id": "dx-pulmonary-embolism",
+        "name": "Pulmonary embolism",
+        "status": "must_not_miss",
+        "note": "Mock must-not-miss candidate; current negatives reduce concern but red flags would change priority.",
+        "relatedConceptIds": ["respiratory-infection"],
+        "relatedSegmentIds": ["hpi-2", "vitals-1", "negative-1", "missing-1"]
+      }
     ]
   },
   "preferenceReview": {
