@@ -23,7 +23,7 @@ import {
 const scenarioData = scenarios as Scenario[];
 const leaderboardData = leaderboard as LeaderboardData;
 
-type SectionId = "about" | "battle" | "map" | "leaderboard" | "search";
+type SectionId = "about" | "battle" | "examples" | "map" | "leaderboard" | "search";
 
 type CollaborationSite = {
   city: string;
@@ -97,6 +97,17 @@ function IconBarChart() {
   );
 }
 
+function IconClipboard() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="8" y="2" width="8" height="4" rx="1" />
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+      <path d="M8 11h8" />
+      <path d="M8 16h6" />
+    </svg>
+  );
+}
+
 function IconMap() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -121,6 +132,7 @@ function IconSearch() {
 const NAV_ITEMS: { id: SectionId; Icon: () => React.ReactElement }[] = [
   { id: "about", Icon: IconInfo },
   { id: "battle", Icon: IconSwords },
+  { id: "examples", Icon: IconClipboard },
   { id: "map", Icon: IconMap },
   { id: "leaderboard", Icon: IconBarChart },
   { id: "search", Icon: IconSearch },
@@ -315,6 +327,7 @@ export function TrustMedWorkbench() {
               onToggleRubric={() => setShowRubric((v) => !v)}
             />
           )}
+          {activeSection === "examples"    && <ExamplesPanel />}
           {activeSection === "leaderboard" && <LeaderboardPanel rows={topRows} />}
           {activeSection === "map"         && <ClinicalMapPanel />}
           {activeSection === "about"       && <AboutPanel />}
@@ -1007,6 +1020,64 @@ function ResponseEvidenceMarker({
                 );
               })}
             </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── Examples panel ─────────────────────────────────────────────────────────
+
+function ExamplesPanel() {
+  const { language } = useLanguage();
+  const copy = workbenchCopy[language].examples;
+  const cards = [
+    {
+      title: copy.caseAudit,
+      href: "/examples/case-audit",
+      body:
+        language === "zh"
+          ? "选择模拟病历片段，添加证据标签、概念标签和诊断推理。"
+          : "Select simulated chart segments, add evidence labels, attach mock concepts, and build diagnostic reasoning."
+    },
+    {
+      title: copy.preferenceReview,
+      href: "/examples/preference-review",
+      body:
+        language === "zh"
+          ? "比较两个模拟模型回答，标注好/坏片段，完成维度评分和偏好选择。"
+          : "Compare two simulated model responses, label good and bad spans, score dimensions, and choose a preference."
+    }
+  ];
+
+  return (
+    <section>
+      <div className="mb-5 border-b border-line pb-5">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent">
+          {copy.eyebrow}
+        </p>
+        <h2 className="mt-2 font-display text-4xl leading-tight text-primary">
+          {copy.title}
+        </h2>
+        <p className="mt-3 max-w-3xl leading-7 text-muted">
+          {copy.intro}
+        </p>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        {cards.map((card) => (
+          <article key={card.href} className="border border-line bg-paper p-5">
+            <h3 className="font-display text-2xl text-primary">
+              {card.title}
+            </h3>
+            <p className="mt-3 leading-7 text-muted">{card.body}</p>
+            <Link
+              href={card.href}
+              className="mt-5 inline-flex border border-primary bg-primary px-5 py-3 text-sm text-white hover:bg-background hover:text-primary"
+            >
+              {copy.open}
+            </Link>
           </article>
         ))}
       </div>

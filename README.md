@@ -14,6 +14,12 @@ Concept / Demo. Not for clinical use.
 
 TRUST-Med is a clinician-led evaluation platform for medical LLMs, developed as a research demo for a Systems Engineering PhD project at Johns Hopkins in collaboration with Nanjing University. The demo shows how physicians can evaluate two anonymized model responses using a scenario-specific rubric before making a pairwise preference choice. It emphasizes clinician-as-judge evaluation, cross-jurisdictional comparison across US and Chinese clinical norms, and safety-aware aggregation. All scenario data and results in this repository are illustrative and simulated.
 
+## Mock clinical interaction examples
+
+TRUST-Med is intended to collect more than final diagnoses. The target data loop includes anonymized case context, clinician follow-up questions, structured differential diagnosis, management recommendations, pairwise model preference, rubric scoring, safety/error labels, and eventual outcome verification.
+
+The `/examples` route contains two static mock demo modes: single-patient chart audit / case annotation, and RLHF-style pairwise response preference review. These examples use simulated data only: no PHI, no real patient data, no real medical search, no backend, no persistence, and no clinical guidance.
+
 ## Run locally
 
 ```bash

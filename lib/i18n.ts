@@ -16,6 +16,7 @@ export const workbenchCopy = {
     nav: {
       about: "About Us",
       battle: "Battle Mode",
+      examples: "Examples",
       map: "Clinical Atlas",
       leaderboard: "Leaderboard",
       search: "Search"
@@ -90,6 +91,15 @@ export const workbenchCopy = {
       failures: "Safety Failures",
       open: "Open full leaderboard"
     },
+    examples: {
+      eyebrow: "Mock examples",
+      title: "Clinical interaction examples",
+      intro:
+        "Static demo workflows showing how TRUST-Med can collect chart annotations, diagnostic reasoning, pairwise response preference, safety labels, and scoring signals without backend persistence.",
+      caseAudit: "Single-patient chart audit",
+      preferenceReview: "Pairwise response preference",
+      open: "Open examples"
+    },
     about: {
       eyebrow: "About",
       acronym: "Translational Real-world User-grounded Safety Testing for Medical AI",
@@ -123,6 +133,7 @@ export const workbenchCopy = {
     nav: {
       about: "项目介绍",
       battle: "题库测评",
+      examples: "示例流程",
       map: "协作地图",
       leaderboard: "排行榜",
       search: "检索"
@@ -196,6 +207,15 @@ export const workbenchCopy = {
       evaluations: "测评数",
       failures: "安全失败",
       open: "打开完整排行榜"
+    },
+    examples: {
+      eyebrow: "模拟示例",
+      title: "临床交互数据采集示例",
+      intro:
+        "静态演示 TRUST-Med 如何采集病例标注、诊断推理、成对回答偏好、安全标签和评分信号；当前不包含后端持久化。",
+      caseAudit: "单病例病历审阅",
+      preferenceReview: "成对回答偏好评审",
+      open: "打开示例"
     },
     about: {
       eyebrow: "项目介绍",

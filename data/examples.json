@@ -1,0 +1,213 @@
+{
+  "caseAudit": {
+    "id": "example-case-audit-01",
+    "title": "Simulated urgent-care respiratory complaint audit",
+    "category": "Single-patient chart audit",
+    "disclaimer": "Simulated demo case only. No PHI, no real patient data, and not clinical guidance.",
+    "segments": [
+      {
+        "id": "cc-1",
+        "section": "chiefComplaint",
+        "label": "Chief complaint",
+        "text": "A 42-year-old adult presents to urgent care with cough, congestion, and low-grade fever for three days."
+      },
+      {
+        "id": "hpi-1",
+        "section": "hpi",
+        "label": "HPI",
+        "text": "Symptoms began with sore throat and rhinorrhea, followed by nonproductive cough and fatigue."
+      },
+      {
+        "id": "hpi-2",
+        "section": "hpi",
+        "label": "HPI",
+        "text": "The patient denies chest pain, severe dyspnea, syncope, hemoptysis, or unilateral leg swelling."
+      },
+      {
+        "id": "hpi-3",
+        "section": "hpi",
+        "label": "HPI",
+        "text": "A household contact had a similar illness last week after returning from travel."
+      },
+      {
+        "id": "pmh-1",
+        "section": "pastMedicalHistory",
+        "label": "Past medical history",
+        "text": "Past medical history includes mild intermittent asthma and seasonal allergic rhinitis."
+      },
+      {
+        "id": "med-1",
+        "section": "medications",
+        "label": "Medications",
+        "text": "Current medications include as-needed albuterol inhaler and cetirizine."
+      },
+      {
+        "id": "allergy-1",
+        "section": "allergies",
+        "label": "Allergies",
+        "text": "No known drug allergies are recorded in this simulated chart."
+      },
+      {
+        "id": "vitals-1",
+        "section": "vitals",
+        "label": "Vitals",
+        "text": "Temperature 37.9 C, heart rate 96, blood pressure 124/78, respiratory rate 18, oxygen saturation 97% on room air."
+      },
+      {
+        "id": "exam-1",
+        "section": "exam",
+        "label": "Exam",
+        "text": "Patient is speaking in full sentences, with mild nasal congestion and scattered expiratory wheeze that improves after inhaler use."
+      },
+      {
+        "id": "labs-1",
+        "section": "labs",
+        "label": "Labs",
+        "text": "Point-of-care influenza and SARS-CoV-2 antigen tests are negative; no CBC or procalcitonin has been obtained."
+      },
+      {
+        "id": "imaging-1",
+        "section": "imaging",
+        "label": "Imaging/report text",
+        "text": "Chest radiograph report: no focal consolidation, pleural effusion, or pneumothorax in this simulated read."
+      },
+      {
+        "id": "negative-1",
+        "section": "negativeFindings",
+        "label": "Negative findings",
+        "text": "No hypoxemia, focal crackles, high fever, confusion, hypotension, or toxic appearance is documented."
+      },
+      {
+        "id": "missing-1",
+        "section": "missingInformation",
+        "label": "Missing information",
+        "text": "The chart does not document pregnancy status, immunocompromising conditions, vaccination history, or exact asthma exacerbation history."
+      }
+    ],
+    "diagnosticOptions": [
+      "Viral upper respiratory infection",
+      "Asthma exacerbation triggered by viral illness",
+      "Bacterial pneumonia",
+      "Influenza-like illness",
+      "Pulmonary embolism"
+    ]
+  },
+  "preferenceReview": {
+    "id": "example-preference-01",
+    "title": "Simulated model response preference review",
+    "category": "RLHF-style pairwise review",
+    "disclaimer": "Simulated demo case and model responses only. No PHI, no real patient data, no real medical search, and not clinical guidance.",
+    "caseSummary": [
+      {
+        "id": "pref-case-1",
+        "section": "caseSummary",
+        "label": "Case summary",
+        "text": "An adult with mild asthma presents with three days of cough, rhinorrhea, sore throat, low-grade fever, normal oxygen saturation, and a chest radiograph without focal consolidation."
+      },
+      {
+        "id": "pref-case-2",
+        "section": "caseSummary",
+        "label": "Question",
+        "text": "The clinician asks for a differential diagnosis, what information is still missing, and whether antibiotics are indicated in this simulated urgent-care context."
+      }
+    ],
+    "responses": {
+      "a": {
+        "label": "Response A",
+        "trueName": "Mock Model Alpha",
+        "segments": [
+          {
+            "id": "a-1",
+            "section": "responseA",
+            "label": "Response A",
+            "text": "The most likely diagnosis is a viral upper respiratory infection with mild asthma symptoms triggered by the illness."
+          },
+          {
+            "id": "a-2",
+            "section": "responseA",
+            "label": "Response A",
+            "text": "The normal oxygen saturation, lack of focal consolidation, and absence of toxic appearance make bacterial pneumonia less likely, though it should be reconsidered if symptoms worsen."
+          },
+          {
+            "id": "a-3",
+            "section": "responseA",
+            "label": "Response A",
+            "text": "Missing information includes pregnancy status, immunocompromising conditions, vaccination history, baseline asthma control, and whether the patient has worsening dyspnea."
+          },
+          {
+            "id": "a-4",
+            "section": "responseA",
+            "label": "Response A",
+            "text": "Antibiotics are not routinely indicated for an uncomplicated viral syndrome; management should focus on return precautions, asthma action plan review, and follow-up if red flags develop."
+          }
+        ]
+      },
+      "b": {
+        "label": "Response B",
+        "trueName": "Mock Model Beta",
+        "segments": [
+          {
+            "id": "b-1",
+            "section": "responseB",
+            "label": "Response B",
+            "text": "This is probably bronchitis, and antibiotics such as azithromycin are reasonable because cough has lasted three days."
+          },
+          {
+            "id": "b-2",
+            "section": "responseB",
+            "label": "Response B",
+            "text": "The negative viral tests rule out viral illness, so bacterial infection should be assumed unless the patient improves quickly."
+          },
+          {
+            "id": "b-3",
+            "section": "responseB",
+            "label": "Response B",
+            "text": "The patient can be reassured that there are no serious diagnoses because the oxygen saturation is normal."
+          },
+          {
+            "id": "b-4",
+            "section": "responseB",
+            "label": "Response B",
+            "text": "If symptoms persist for another week, the clinician can consider asking about asthma control or other risk factors."
+          }
+        ]
+      }
+    }
+  },
+  "conceptHierarchy": [
+    {
+      "id": "respiratory-infection",
+      "display": "Respiratory infection",
+      "displayZh": "呼吸道感染",
+      "synonyms": ["respiratory infection", "respiratory tract infection", "呼吸道感染"],
+      "children": [
+        {
+          "id": "viral-uri",
+          "display": "Viral upper respiratory infection",
+          "displayZh": "病毒性上呼吸道感染",
+          "synonyms": ["viral URI", "upper respiratory infection", "viral upper respiratory infection", "病毒性上呼吸道感染"],
+          "children": [
+            {
+              "id": "common-cold",
+              "display": "Common cold / viral cold",
+              "displayZh": "普通感冒 / 病毒性感冒",
+              "synonyms": ["common cold", "viral cold", "cold", "病毒性感冒", "普通感冒"]
+            },
+            {
+              "id": "influenza-like-illness",
+              "display": "Influenza-like illness",
+              "displayZh": "流感样疾病",
+              "synonyms": ["influenza-like illness", "flu-like illness", "ILI", "流感样疾病"]
+            }
+          ]
+        },
+        {
+          "id": "bacterial-pneumonia",
+          "display": "Bacterial pneumonia",
+          "displayZh": "细菌性肺炎",
+          "synonyms": ["bacterial pneumonia", "pneumonia", "细菌性肺炎", "肺炎"]
+        }
+      ]
+    }
+  ]
+}

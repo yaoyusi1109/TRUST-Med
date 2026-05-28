@@ -71,3 +71,51 @@ export type LeaderboardData = {
   routine: LeaderboardRow[];
   highStakes: LeaderboardRow[];
 };
+
+export type ExampleSegment = {
+  id: string;
+  section: string;
+  label: string;
+  text: string;
+};
+
+export type ConceptNode = {
+  id: string;
+  display: string;
+  displayZh?: string;
+  synonyms: string[];
+  children?: ConceptNode[];
+};
+
+export type ExampleCaseAudit = {
+  id: string;
+  title: string;
+  category: string;
+  disclaimer: string;
+  segments: ExampleSegment[];
+  diagnosticOptions: string[];
+};
+
+export type ExampleResponse = {
+  label: string;
+  trueName: string;
+  segments: ExampleSegment[];
+};
+
+export type ExamplePreferenceReview = {
+  id: string;
+  title: string;
+  category: string;
+  disclaimer: string;
+  caseSummary: ExampleSegment[];
+  responses: {
+    a: ExampleResponse;
+    b: ExampleResponse;
+  };
+};
+
+export type ExamplesData = {
+  caseAudit: ExampleCaseAudit;
+  preferenceReview: ExamplePreferenceReview;
+  conceptHierarchy: ConceptNode[];
+};
