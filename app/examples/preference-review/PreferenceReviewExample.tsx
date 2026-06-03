@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { LanguageToggle, useLanguage } from "@/components/LanguageProvider";
 import { PageShell } from "@/components/PageShell";
 import type { ExamplePreferenceReview, ExampleSegment } from "@/types";
 
 const PREFERENCE_OPTIONS = [
-  ["a_better", "A is better"],
-  ["b_better", "B is better"],
-  ["tie", "Tie"],
-  ["both_unsafe", "Both unsafe / unacceptable"]
+  ["a_better", "A is better", "A 更好"],
+  ["b_better", "B is better", "B 更好"],
+  ["tie", "Tie", "平局"],
+  ["both_unsafe", "Both unsafe / unacceptable", "两者均不安全或不可接受"]
 ] as const;
 
 const RESPONSE_LABELS = [
@@ -27,14 +28,107 @@ const RESPONSE_LABELS = [
 ] as const;
 
 const DIMENSIONS = [
-  ["accuracy", "Accuracy"],
-  ["safety", "Safety"],
-  ["completeness", "Completeness"],
-  ["reasoningQuality", "Reasoning quality"],
-  ["uncertaintyCalibration", "Uncertainty calibration"],
-  ["communication", "Communication"],
-  ["workflowUsefulness", "Workflow usefulness"]
+  ["accuracy", "Accuracy", "准确性"],
+  ["safety", "Safety", "安全性"],
+  ["completeness", "Completeness", "完整性"],
+  ["reasoningQuality", "Reasoning quality", "推理质量"],
+  ["uncertaintyCalibration", "Uncertainty calibration", "不确定性校准"],
+  ["communication", "Communication", "沟通表达"],
+  ["workflowUsefulness", "Workflow usefulness", "工作流可用性"]
 ] as const;
+
+const responseLabelCopy: Record<ResponseLabel, { en: string; zh: string }> = {
+  "clinically correct": { en: "clinically correct", zh: "临床正确" },
+  "clinically unsafe": { en: "clinically unsafe", zh: "临床不安全" },
+  "unsupported claim": { en: "unsupported claim", zh: "缺乏支持的主张" },
+  "missed red flag": { en: "missed red flag", zh: "遗漏红旗征象" },
+  overconfident: { en: "overconfident", zh: "过度自信" },
+  "useful reasoning": { en: "useful reasoning", zh: "有用推理" },
+  "poor uncertainty calibration": {
+    en: "poor uncertainty calibration",
+    zh: "不确定性校准不足"
+  },
+  "wrong recommendation": { en: "wrong recommendation", zh: "错误建议" },
+  "good patient communication": {
+    en: "good patient communication",
+    zh: "良好医患沟通"
+  },
+  "too vague": { en: "too vague", zh: "过于笼统" },
+  "too verbose": { en: "too verbose", zh: "过于冗长" }
+};
+
+const preferenceCopy = {
+  en: {
+    eyebrow: "Mock preference review",
+    title: "Pairwise Response Preference Review",
+    subtitle: "成对回答偏好评审",
+    intro:
+      "Simulated demo case and model responses only. No PHI, no real patient data, no real medical search, and not clinical guidance.",
+    secondaryIntro:
+      "仅使用模拟病例和模拟模型回答。不含 PHI、无真实患者数据、无真实医学检索，且非临床指导。",
+    back: "Back to examples",
+    badge: "Simulated model responses / Not clinical guidance",
+    clinicalCase: "Clinical Case",
+    caseShown: "Case shown to both models",
+    responseA: "Response A",
+    responseB: "Response B",
+    clickToSelect: "Click to select",
+    tags: "tag(s)",
+    segmentFeedback: "Segment-Level Feedback",
+    markSpans: "Mark good or bad spans",
+    selectedSegment: "Selected response segment",
+    selectSegmentFirst: "Select a response segment first.",
+    good: "good",
+    bad: "bad",
+    segmentLabel: "Segment label",
+    addSpanLabel: "Add span label",
+    preferenceDecision: "Preference Decision",
+    overallJudgment: "Overall judgment",
+    dimensionScores: "Dimension Scores",
+    rationale: "Rationale",
+    rationalePlaceholder: "Explain what drove the preference...",
+    mockPayload: "Mock Preference Payload",
+    payloadPreview: "Payload preview",
+    highlightedSpans: "Highlighted spans",
+    safetyErrorTags: "Safety/error tags"
+  },
+  zh: {
+    eyebrow: "模拟偏好评审",
+    title: "成对回答偏好评审",
+    subtitle: "Pairwise Response Preference Review",
+    intro:
+      "仅使用模拟病例和模拟模型回答。不含 PHI、无真实患者数据、无真实医学检索，且非临床指导。",
+    secondaryIntro:
+      "Simulated demo case and model responses only. No PHI, no real patient data, no real medical search, and not clinical guidance.",
+    back: "返回示例",
+    badge: "模拟模型回答 / 非临床指导",
+    clinicalCase: "临床病例",
+    caseShown: "两个模型均看到的病例",
+    responseA: "回答 A",
+    responseB: "回答 B",
+    clickToSelect: "点击选择",
+    tags: "个标签",
+    segmentFeedback: "片段级反馈",
+    markSpans: "标记优劣片段",
+    selectedSegment: "已选回答片段",
+    selectSegmentFirst: "请先选择一个回答片段。",
+    good: "好",
+    bad: "差",
+    segmentLabel: "片段标签",
+    addSpanLabel: "添加片段标签",
+    preferenceDecision: "偏好选择",
+    overallJudgment: "总体判断",
+    dimensionScores: "分维度评分",
+    rationale: "评审理由",
+    rationalePlaceholder: "说明影响偏好选择的关键原因...",
+    mockPayload: "模拟偏好数据负载",
+    payloadPreview: "数据负载预览",
+    highlightedSpans: "已标记片段",
+    safetyErrorTags: "安全性/错误标签"
+  }
+} as const;
+
+type PreferenceCopy = Record<keyof (typeof preferenceCopy)["en"], string>;
 
 type PreferenceChoice = (typeof PREFERENCE_OPTIONS)[number][0];
 type ResponseLabel = (typeof RESPONSE_LABELS)[number];
@@ -93,6 +187,8 @@ export function PreferenceReviewExample({
 }: {
   example: ExamplePreferenceReview;
 }) {
+  const { language } = useLanguage();
+  const copy = preferenceCopy[language];
   const firstSegment = example.responses.a.segments[0];
   const [selectedTarget, setSelectedTarget] = useState<ResponseTarget | null>(
     firstSegment ? { response: "a", segment: firstSegment } : null
@@ -164,30 +260,39 @@ export function PreferenceReviewExample({
 
   return (
     <PageShell
-      eyebrow="Mock preference review"
-      title={example.title}
-      intro={example.disclaimer}
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      intro={copy.intro}
     >
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          href="/examples"
-          className="border border-line bg-background px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary"
-        >
-          Back to examples
-        </Link>
-        <span className="border border-accent bg-background px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-accent">
-          Simulated model responses
-        </span>
+      <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="font-display text-2xl text-muted">{copy.subtitle}</p>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
+            {copy.secondaryIntro}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href="/examples"
+              className="border border-line bg-background px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary"
+            >
+              {copy.back}
+            </Link>
+            <span className="border border-accent bg-background px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-accent">
+              {copy.badge}
+            </span>
+          </div>
+        </div>
+        <LanguageToggle compact />
       </div>
 
       <div className="grid gap-6 py-9 xl:grid-cols-[1fr_360px]">
         <section className="space-y-5">
           <article className="border border-line bg-paper p-5">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-              Simulated anonymized case
+              {copy.clinicalCase}
             </p>
             <h2 className="mt-2 font-display text-3xl text-primary">
-              Case shown to both models
+              {copy.caseShown}
             </h2>
             <div className="mt-4 grid gap-3">
               {example.caseSummary.map((segment) => (
@@ -208,7 +313,7 @@ export function PreferenceReviewExample({
                 <article key={responseId} className="border border-line bg-paper">
                   <div className="border-b border-line bg-wash px-5 py-3">
                     <p className="font-mono text-xs uppercase tracking-[0.14em] text-primary">
-                      {response.label}
+                      {responseId === "a" ? copy.responseA : copy.responseB}
                     </p>
                   </div>
                   <div className="space-y-3 p-5">
@@ -245,8 +350,8 @@ export function PreferenceReviewExample({
                             }`}
                           >
                             {segmentAnnotations.length
-                              ? `${segmentAnnotations.length} tag(s)`
-                              : "Click to select"}
+                              ? `${segmentAnnotations.length} ${copy.tags}`
+                              : copy.clickToSelect}
                           </span>
                         </button>
                       );
@@ -263,6 +368,8 @@ export function PreferenceReviewExample({
             selectedTarget={selectedTarget}
             polarity={polarity}
             responseLabel={responseLabel}
+            language={language}
+            copy={copy}
             onPolarityChange={setPolarity}
             onLabelChange={setResponseLabel}
             onSubmit={saveAnnotation}
@@ -271,6 +378,8 @@ export function PreferenceReviewExample({
             preference={preference}
             scores={scores}
             rationale={rationale}
+            language={language}
+            copy={copy}
             onPreferenceChange={setPreference}
             onScoreChange={(dimension, value) =>
               setScores((current) => ({
@@ -284,6 +393,7 @@ export function PreferenceReviewExample({
             annotations={annotations}
             safetyTags={safetyTags}
             payloadPreview={payloadPreview}
+            copy={copy}
           />
         </aside>
       </div>
@@ -295,6 +405,8 @@ function SegmentTagPanel({
   selectedTarget,
   polarity,
   responseLabel,
+  language,
+  copy,
   onPolarityChange,
   onLabelChange,
   onSubmit
@@ -302,6 +414,8 @@ function SegmentTagPanel({
   selectedTarget: ResponseTarget | null;
   polarity: Polarity;
   responseLabel: ResponseLabel;
+  language: "en" | "zh";
+  copy: PreferenceCopy;
   onPolarityChange: (polarity: Polarity) => void;
   onLabelChange: (label: ResponseLabel) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -309,19 +423,19 @@ function SegmentTagPanel({
   return (
     <section className="border border-line bg-paper p-4">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Segment labels
+        {copy.segmentFeedback}
       </p>
       <h2 className="mt-2 font-display text-2xl text-primary">
-        Mark good or bad spans
+        {copy.markSpans}
       </h2>
       <div className="mt-4 border border-line bg-background p-3">
         <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-          Selected response segment
+          {copy.selectedSegment}
         </p>
         <p className="mt-2 text-sm leading-6 text-ink">
           {selectedTarget
             ? `${selectedTarget.response === "a" ? "Response A" : "Response B"}: ${selectedTarget.segment.text}`
-            : "Select a response segment first."}
+            : copy.selectSegmentFirst}
         </p>
       </div>
       <form onSubmit={onSubmit} className="mt-4 space-y-3">
@@ -342,13 +456,13 @@ function SegmentTagPanel({
                 checked={polarity === value}
                 onChange={() => onPolarityChange(value)}
               />
-              {value}
+              {value === "good" ? copy.good : copy.bad}
             </label>
           ))}
         </fieldset>
         <label className="block">
           <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-            Segment label
+            {copy.segmentLabel}
           </span>
           <select
             value={responseLabel}
@@ -359,7 +473,7 @@ function SegmentTagPanel({
           >
             {RESPONSE_LABELS.map((label) => (
               <option key={label} value={label}>
-                {label}
+                {responseLabelCopy[label][language]}
               </option>
             ))}
           </select>
@@ -369,7 +483,7 @@ function SegmentTagPanel({
           disabled={!selectedTarget}
           className="w-full border border-primary bg-primary px-4 py-2 text-sm text-white hover:bg-background hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Add span label
+          {copy.addSpanLabel}
         </button>
       </form>
     </section>
@@ -380,6 +494,8 @@ function PreferencePanel({
   preference,
   scores,
   rationale,
+  language,
+  copy,
   onPreferenceChange,
   onScoreChange,
   onRationaleChange
@@ -387,6 +503,8 @@ function PreferencePanel({
   preference: PreferenceChoice;
   scores: DimensionScores;
   rationale: string;
+  language: "en" | "zh";
+  copy: PreferenceCopy;
   onPreferenceChange: (choice: PreferenceChoice) => void;
   onScoreChange: (dimension: DimensionKey, value: number) => void;
   onRationaleChange: (rationale: string) => void;
@@ -394,13 +512,13 @@ function PreferencePanel({
   return (
     <section className="border border-line bg-paper p-4">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Preference
+        {copy.preferenceDecision}
       </p>
       <h2 className="mt-2 font-display text-2xl text-primary">
-        Overall judgment
+        {copy.overallJudgment}
       </h2>
       <fieldset className="mt-4 grid gap-2">
-        {PREFERENCE_OPTIONS.map(([value, label]) => (
+        {PREFERENCE_OPTIONS.map(([value, labelEn, labelZh]) => (
           <label
             key={value}
             className={`flex items-center gap-3 border p-3 text-sm ${
@@ -416,20 +534,22 @@ function PreferencePanel({
               checked={preference === value}
               onChange={() => onPreferenceChange(value)}
             />
-            {label}
+            {language === "en" ? labelEn : labelZh}
           </label>
         ))}
       </fieldset>
 
       <div className="mt-5 border-t border-line pt-4">
         <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-          Dimension scores
+          {copy.dimensionScores}
         </p>
         <div className="mt-3 space-y-3">
-          {DIMENSIONS.map(([key, label]) => (
+          {DIMENSIONS.map(([key, labelEn, labelZh]) => (
             <label key={key} className="block">
               <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-muted">{label}</span>
+                <span className="text-muted">
+                  {language === "en" ? labelEn : labelZh}
+                </span>
                 <span className="font-mono text-primary">{scores[key]}</span>
               </div>
               <input
@@ -449,13 +569,13 @@ function PreferencePanel({
 
       <label className="mt-5 block">
         <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-          Free-text rationale
+          {copy.rationale}
         </span>
         <textarea
           value={rationale}
           onChange={(event) => onRationaleChange(event.target.value)}
           className="mt-2 min-h-24 w-full border border-line bg-background p-3 text-sm leading-6 text-ink outline-none focus:border-primary"
-          placeholder="Explain what drove the preference..."
+          placeholder={copy.rationalePlaceholder}
         />
       </label>
     </section>
@@ -465,30 +585,32 @@ function PreferencePanel({
 function PreferenceSummary({
   annotations,
   safetyTags,
-  payloadPreview
+  payloadPreview,
+  copy
 }: {
   annotations: ResponseAnnotation[];
   safetyTags: { response: string; label: ResponseLabel; text: string }[];
   payloadPreview: object;
+  copy: PreferenceCopy;
 }) {
   return (
     <section className="border border-line bg-paper p-4">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Mock submission
+        {copy.mockPayload}
       </p>
       <h2 className="mt-2 font-display text-2xl text-primary">
-        Payload preview
+        {copy.payloadPreview}
       </h2>
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div className="border border-line bg-background p-3">
           <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-            Highlighted spans
+            {copy.highlightedSpans}
           </p>
           <p className="mt-1 text-sm text-ink">{annotations.length}</p>
         </div>
         <div className="border border-line bg-background p-3">
           <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-            Safety/error tags
+            {copy.safetyErrorTags}
           </p>
           <p className="mt-1 text-sm text-ink">{safetyTags.length}</p>
         </div>

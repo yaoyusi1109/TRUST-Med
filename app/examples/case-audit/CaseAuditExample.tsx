@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { LanguageToggle, useLanguage } from "@/components/LanguageProvider";
 import { PageShell } from "@/components/PageShell";
 import type {
   ConceptNode,
@@ -41,6 +42,136 @@ const DIAGNOSIS_STATUSES = [
   ["less_likely", "Less likely"],
   ["must_not_miss", "Must not miss"]
 ] as const;
+
+const caseAuditCopy = {
+  en: {
+    eyebrow: "Mock case audit",
+    title: "Single-Patient Case Audit",
+    subtitle: "单患者病历审计",
+    intro:
+      "Simulated demo case only. No PHI, no real patient data, and not clinical guidance.",
+    secondaryIntro: "仅用于模拟演示。不含 PHI、无真实患者数据，且非临床指导。",
+    back: "Back to examples",
+    badge: "Simulated demo data / Not clinical guidance",
+    caseContext: "Case Context",
+    caseContextSubtitle: "Select one or more predefined segments",
+    selected: "selected",
+    selectedState: "Selected",
+    clickToSelect: "Click to select",
+    savedGroupedAnnotations: "saved grouped annotation(s)",
+    clearSelection: "Clear selection",
+    annotationControls: "Annotation Controls",
+    annotateSelected: "Annotate selected",
+    currentSelection: "Current selection",
+    selectedSegments: "Selected Segments",
+    emptySelection:
+      "Select one or more chart segments to annotate them together.",
+    focusedWorkspace: "Focused Annotation Workspace",
+    addGroupedNote: "Add grouped clinical note",
+    cancel: "Cancel",
+    annotationLabel: "Annotation label",
+    clinicianNote: "Clinician note / opinion",
+    notePlaceholder: "Explain why these selected segments matter together...",
+    selectedConcept: "Selected concept",
+    noConcept: "No concept attached",
+    medicalConceptSearch: "Medical Concept Search",
+    attachConcept: "Attach a static medical concept",
+    conceptSearchLabel: "Search concept names and synonyms",
+    conceptPlaceholder: "Try common cold or 病毒性感冒",
+    parents: "Parent concept(s)",
+    topLevelConcept: "Top level concept",
+    children: "Child concept(s)",
+    noChildren: "No child concepts in mock hierarchy",
+    attachThisConcept: "Attach this concept",
+    noConceptResults: "No static mock concepts matched this query.",
+    saveAnnotation: "Save annotation",
+    mockPayloadPreview: "Mock Payload Preview",
+    groupedAnnotation: "Grouped Annotation",
+    inspectPayload: "Inspect payload",
+    noAnnotations: "No saved grouped annotations yet.",
+    noNote: "No note entered.",
+    expandedPayload: "Expanded mock payload",
+    payloadTitle: "Case audit annotation data",
+    close: "Close",
+    diagnosticTray: "Diagnostic Reasoning Tray",
+    diagnosticTraySubtitle: "Mock ranked diagnoses",
+    openTray: "Open mock ranking tray",
+    rankingDisclaimer: "Mock ranking based on demo annotations only",
+    collapse: "Collapse",
+    mockDiagnosisCandidate: "Mock diagnosis candidate",
+    diagnosisStatus: "Diagnosis status",
+    delete: "Delete",
+    addClinicianDiagnosis: "Add clinician diagnosis",
+    diagnosis: "Diagnosis",
+    status: "Status",
+    note: "Note",
+    addDiagnosis: "Add diagnosis"
+  },
+  zh: {
+    eyebrow: "模拟病历审计",
+    title: "单患者病历审计",
+    subtitle: "Single-Patient Case Audit",
+    intro: "仅用于模拟演示。不含 PHI、无真实患者数据，且非临床指导。",
+    secondaryIntro:
+      "Simulated demo case only. No PHI, no real patient data, and not clinical guidance.",
+    back: "返回示例",
+    badge: "模拟演示数据 / 非临床指导",
+    caseContext: "病例背景",
+    caseContextSubtitle: "选择一个或多个预定义片段",
+    selected: "已选",
+    selectedState: "已选择",
+    clickToSelect: "点击选择",
+    savedGroupedAnnotations: "条已保存组合标注",
+    clearSelection: "清除选择",
+    annotationControls: "标注控制",
+    annotateSelected: "标注已选片段",
+    currentSelection: "当前选择",
+    selectedSegments: "已选片段",
+    emptySelection: "选择一个或多个病历片段后，可将它们作为一组进行标注。",
+    focusedWorkspace: "聚焦标注工作区",
+    addGroupedNote: "添加组合临床意见",
+    cancel: "取消",
+    annotationLabel: "标注标签",
+    clinicianNote: "临床医生备注 / 判断",
+    notePlaceholder: "说明这些已选片段为何需要合并解读...",
+    selectedConcept: "已选概念",
+    noConcept: "未附加概念",
+    medicalConceptSearch: "医学概念检索",
+    attachConcept: "附加静态医学概念",
+    conceptSearchLabel: "检索概念名称和同义词",
+    conceptPlaceholder: "可尝试 common cold 或 病毒性感冒",
+    parents: "父级概念",
+    topLevelConcept: "顶层概念",
+    children: "子级概念",
+    noChildren: "模拟层级中无子概念",
+    attachThisConcept: "附加此概念",
+    noConceptResults: "没有匹配该查询的静态模拟概念。",
+    saveAnnotation: "保存标注",
+    mockPayloadPreview: "模拟数据负载预览",
+    groupedAnnotation: "组合标注",
+    inspectPayload: "查看数据负载",
+    noAnnotations: "尚无已保存的组合标注。",
+    noNote: "未填写备注。",
+    expandedPayload: "展开的模拟数据负载",
+    payloadTitle: "病历审计标注数据",
+    close: "关闭",
+    diagnosticTray: "诊断推理面板",
+    diagnosticTraySubtitle: "模拟排序诊断",
+    openTray: "打开模拟排序面板",
+    rankingDisclaimer: "仅基于演示标注的模拟排序",
+    collapse: "收起",
+    mockDiagnosisCandidate: "模拟诊断候选",
+    diagnosisStatus: "诊断状态",
+    delete: "删除",
+    addClinicianDiagnosis: "添加临床医生诊断",
+    diagnosis: "诊断",
+    status: "状态",
+    note: "备注",
+    addDiagnosis: "添加诊断"
+  }
+} as const;
+
+type CaseAuditCopy = Record<keyof (typeof caseAuditCopy)["en"], string>;
 
 type AuditLabel = (typeof AUDIT_LABELS)[number];
 type DiagnosisStatus = (typeof DIAGNOSIS_STATUSES)[number][0];
@@ -262,6 +393,8 @@ export function CaseAuditExample({
   example: ExampleCaseAudit;
   concepts: ConceptNode[];
 }) {
+  const { language } = useLanguage();
+  const copy = caseAuditCopy[language];
   const [selectedSegmentIds, setSelectedSegmentIds] = useState<string[]>([]);
   const [annotations, setAnnotations] = useState<GroupedAnnotation[]>([]);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
@@ -429,20 +562,29 @@ export function CaseAuditExample({
 
   return (
     <PageShell
-      eyebrow="Mock case audit"
-      title={example.title}
-      intro={example.disclaimer}
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      intro={copy.intro}
     >
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          href="/examples"
-          className="border border-line bg-background px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary"
-        >
-          Back to examples
-        </Link>
-        <span className="border border-accent bg-background px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-accent">
-          Simulated demo data
-        </span>
+      <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="font-display text-2xl text-muted">{copy.subtitle}</p>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
+            {copy.secondaryIntro}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href="/examples"
+              className="border border-line bg-background px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary"
+            >
+              {copy.back}
+            </Link>
+            <span className="border border-accent bg-background px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-accent">
+              {copy.badge}
+            </span>
+          </div>
+        </div>
+        <LanguageToggle compact />
       </div>
 
       <div className="grid gap-6 pb-[360px] pt-9 xl:grid-cols-[1fr_360px]">
@@ -451,15 +593,15 @@ export function CaseAuditExample({
             <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-4">
               <div>
                 <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-                  Structured case context
+                  {copy.caseContext}
                 </p>
                 <h2 className="mt-2 font-display text-3xl text-primary">
-                  Select one or more predefined segments
+                  {copy.caseContextSubtitle}
                 </h2>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="border border-line bg-background px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-muted">
-                  {selectedSegmentIds.length} selected
+                  {selectedSegmentIds.length} {copy.selected}
                 </span>
                 <button
                   type="button"
@@ -469,7 +611,7 @@ export function CaseAuditExample({
                   }}
                   className="border border-line bg-background px-3 py-2 text-sm text-muted hover:border-primary hover:text-primary"
                 >
-                  Clear selection
+                  {copy.clearSelection}
                 </button>
               </div>
             </div>
@@ -511,10 +653,10 @@ export function CaseAuditExample({
                               }`}
                             >
                               {selected
-                                ? "Selected"
+                                ? copy.selectedState
                                 : segmentAnnotations.length
-                                  ? `${segmentAnnotations.length} saved grouped annotation(s)`
-                                  : "Click to select"}
+                                  ? `${segmentAnnotations.length} ${copy.savedGroupedAnnotations}`
+                                  : copy.clickToSelect}
                             </span>
                           </button>
                         );
@@ -531,6 +673,7 @@ export function CaseAuditExample({
           <CompactAnnotationPanel
             selectedSegments={selectedSegments}
             warning={selectionWarning}
+            copy={copy}
             onOpenWorkspace={openWorkspace}
             onClearSelection={() => {
               setSelectedSegmentIds([]);
@@ -541,6 +684,7 @@ export function CaseAuditExample({
           <SummaryPanel
             annotations={annotations}
             payloadPreview={payloadPreview}
+            copy={copy}
           />
         </aside>
       </div>
@@ -553,6 +697,7 @@ export function CaseAuditExample({
           annotationConcept={annotationConcept}
           conceptQuery={conceptQuery}
           conceptResults={conceptResults}
+          copy={copy}
           onLabelChange={setAnnotationLabel}
           onNoteChange={setAnnotationNote}
           onConceptQueryChange={setConceptQuery}
@@ -566,6 +711,7 @@ export function CaseAuditExample({
         mode={trayMode}
         rankedDiagnoses={rankedDiagnoses}
         userDiagnosisDraft={userDiagnosisDraft}
+        copy={copy}
         onMouseEnter={() => {
           if (!isTrayExpanded && !introPreview) {
             setIsTrayHovered(true);
@@ -593,11 +739,13 @@ export function CaseAuditExample({
 function CompactAnnotationPanel({
   selectedSegments,
   warning,
+  copy,
   onOpenWorkspace,
   onClearSelection
 }: {
   selectedSegments: ExampleSegment[];
   warning: string;
+  copy: CaseAuditCopy;
   onOpenWorkspace: () => void;
   onClearSelection: () => void;
 }) {
@@ -605,7 +753,7 @@ function CompactAnnotationPanel({
     <section className="border border-line bg-paper">
       <div className="sticky top-0 z-20 border-b border-line bg-paper p-4">
         <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-          Annotation controls
+          {copy.annotationControls}
         </p>
         <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
           <button
@@ -613,26 +761,26 @@ function CompactAnnotationPanel({
             onClick={onOpenWorkspace}
             className="border border-primary bg-primary px-4 py-3 text-sm text-white hover:bg-background hover:text-primary"
           >
-            Annotate selected
+            {copy.annotateSelected}
           </button>
           <button
             type="button"
             onClick={onClearSelection}
             className="border border-line bg-background px-4 py-3 text-sm text-muted hover:border-primary hover:text-primary"
           >
-            Clear selection
+            {copy.clearSelection}
           </button>
         </div>
       </div>
 
       <div className="p-4">
         <h2 className="font-display text-2xl text-primary">
-          Current selection
+          {copy.currentSelection}
         </h2>
         <div className="mt-4 border border-line bg-background p-3">
         <div className="flex items-center justify-between gap-3">
           <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-            Selected segments
+            {copy.selectedSegments}
           </p>
           <span className="font-mono text-sm text-primary">
             {selectedSegments.length}
@@ -650,7 +798,7 @@ function CompactAnnotationPanel({
             ))
           ) : (
             <p className="text-sm leading-6 text-muted">
-              Select one or more chart segments to annotate them together.
+              {copy.emptySelection}
             </p>
           )}
         </div>
@@ -672,6 +820,7 @@ function AnnotationWorkspace({
   annotationConcept,
   conceptQuery,
   conceptResults,
+  copy,
   onLabelChange,
   onNoteChange,
   onConceptQueryChange,
@@ -685,6 +834,7 @@ function AnnotationWorkspace({
   annotationConcept?: ConceptSummary;
   conceptQuery: string;
   conceptResults: ConceptMatch[];
+  copy: CaseAuditCopy;
   onLabelChange: (label: AuditLabel) => void;
   onNoteChange: (note: string) => void;
   onConceptQueryChange: (query: string) => void;
@@ -698,10 +848,10 @@ function AnnotationWorkspace({
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line bg-wash px-5 py-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-              Focused annotation workspace
+              {copy.focusedWorkspace}
             </p>
             <h2 className="mt-1 font-display text-3xl text-primary">
-              Add grouped clinical note
+              {copy.addGroupedNote}
             </h2>
           </div>
           <button
@@ -709,7 +859,7 @@ function AnnotationWorkspace({
             onClick={onClose}
             className="border border-line bg-background px-3 py-2 text-sm text-muted hover:border-primary hover:text-primary"
           >
-            Cancel
+            {copy.cancel}
           </button>
         </div>
 
@@ -718,7 +868,7 @@ function AnnotationWorkspace({
             <section className="border border-line bg-background p-4">
               <div className="flex items-center justify-between gap-3">
                 <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-                  Selected segments
+                  {copy.selectedSegments}
                 </p>
                 <span className="font-mono text-sm text-primary">
                   {selectedSegments.length}
@@ -740,7 +890,7 @@ function AnnotationWorkspace({
 
             <label className="block">
               <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                Annotation label
+                {copy.annotationLabel}
               </span>
               <select
                 value={annotationLabel}
@@ -757,22 +907,22 @@ function AnnotationWorkspace({
 
             <label className="block">
               <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                Clinician note / opinion
+                {copy.clinicianNote}
               </span>
               <textarea
                 value={annotationNote}
                 onChange={(event) => onNoteChange(event.target.value)}
                 className="mt-2 min-h-40 w-full border border-line bg-background p-3 text-sm leading-6 text-ink outline-none focus:border-primary"
-                placeholder="Explain why these selected segments matter together..."
+                placeholder={copy.notePlaceholder}
               />
             </label>
 
             <div className="border border-line bg-wash p-3">
               <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                Selected concept
+                {copy.selectedConcept}
               </p>
               <p className="mt-1 text-sm leading-6 text-ink">
-                {annotationConcept ? conceptLabel(annotationConcept) : "No concept attached"}
+                {annotationConcept ? conceptLabel(annotationConcept) : copy.noConcept}
               </p>
             </div>
           </div>
@@ -781,6 +931,7 @@ function AnnotationWorkspace({
             <ConceptSearchWorkspace
               query={conceptQuery}
               results={conceptResults}
+              copy={copy}
               onQueryChange={onConceptQueryChange}
               onConceptSelect={onConceptSelect}
             />
@@ -790,13 +941,13 @@ function AnnotationWorkspace({
                 onClick={onClose}
                 className="border border-line bg-background px-5 py-3 text-sm text-muted hover:border-primary hover:text-primary"
               >
-                Cancel
+                {copy.cancel}
               </button>
               <button
                 type="submit"
                 className="border border-accent bg-accent px-5 py-3 text-sm text-white hover:bg-background hover:text-accent"
               >
-                Save annotation
+                {copy.saveAnnotation}
               </button>
             </div>
           </div>
@@ -809,31 +960,33 @@ function AnnotationWorkspace({
 function ConceptSearchWorkspace({
   query,
   results,
+  copy,
   onQueryChange,
   onConceptSelect
 }: {
   query: string;
   results: ConceptMatch[];
+  copy: CaseAuditCopy;
   onQueryChange: (query: string) => void;
   onConceptSelect: (concept: ConceptSummary) => void;
 }) {
   return (
     <section className="border border-line bg-background p-4">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Mock concept hierarchy search
+        {copy.medicalConceptSearch}
       </p>
       <h3 className="mt-2 font-display text-2xl text-primary">
-        Attach a static medical concept
+        {copy.attachConcept}
       </h3>
       <label className="mt-4 block">
         <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-          Search concept names and synonyms
+          {copy.conceptSearchLabel}
         </span>
         <input
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
           className="mt-2 w-full border border-line bg-paper px-3 py-2 text-sm text-ink outline-none focus:border-primary"
-          placeholder="Try viral cold or 病毒性感冒"
+          placeholder={copy.conceptPlaceholder}
         />
       </label>
       <div className="mt-4 max-h-[460px] space-y-3 overflow-auto">
@@ -841,12 +994,12 @@ function ConceptSearchWorkspace({
           results.map(({ node, ancestors, children }) => (
             <article key={node.id} className="border border-line bg-paper p-3">
               <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                Parent concept(s)
+                {copy.parents}
               </p>
               <p className="mt-1 text-sm leading-6 text-muted">
                 {ancestors.length
                   ? ancestors.map(conceptLabel).join(" -> ")
-                  : "Top level concept"}
+                  : copy.topLevelConcept}
               </p>
               <div className="mt-3 border-l-2 border-primary pl-3">
                 <p className="font-display text-xl text-primary">
@@ -857,25 +1010,25 @@ function ConceptSearchWorkspace({
                 </p>
               </div>
               <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                Child concept(s)
+                {copy.children}
               </p>
               <p className="mt-1 text-sm leading-6 text-muted">
                 {children.length
                   ? children.map(conceptLabel).join(" | ")
-                  : "No child concepts in mock hierarchy"}
+                  : copy.noChildren}
               </p>
               <button
                 type="button"
                 onClick={() => onConceptSelect(conceptSummary(node))}
                 className="mt-3 w-full border border-primary bg-background px-3 py-2 text-xs text-primary hover:bg-primary hover:text-white"
               >
-                Attach this concept
+                {copy.attachThisConcept}
               </button>
             </article>
           ))
         ) : (
           <p className="border border-line bg-paper p-3 text-sm leading-6 text-muted">
-            No static mock concepts matched this query.
+            {copy.noConceptResults}
           </p>
         )}
       </div>
@@ -885,10 +1038,12 @@ function ConceptSearchWorkspace({
 
 function SummaryPanel({
   annotations,
-  payloadPreview
+  payloadPreview,
+  copy
 }: {
   annotations: GroupedAnnotation[];
   payloadPreview: object;
+  copy: CaseAuditCopy;
 }) {
   const [expanded, setExpanded] = useState(false);
   const payloadText = JSON.stringify(payloadPreview, null, 2);
@@ -898,10 +1053,10 @@ function SummaryPanel({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-            Mock payload preview
+            {copy.mockPayloadPreview}
           </p>
           <h2 className="mt-2 font-display text-2xl text-primary">
-            Grouped annotations
+            {copy.groupedAnnotation}
           </h2>
         </div>
         <button
@@ -909,7 +1064,7 @@ function SummaryPanel({
           onClick={() => setExpanded(true)}
           className="border border-line bg-background px-3 py-2 text-sm text-muted hover:border-primary hover:text-primary"
         >
-          Inspect payload
+          {copy.inspectPayload}
         </button>
       </div>
       <div className="mt-4 space-y-3">
@@ -919,7 +1074,7 @@ function SummaryPanel({
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                    Group #{annotation.sequence}
+                    {copy.groupedAnnotation} #{annotation.sequence}
                   </p>
                   <h3 className="mt-1 font-display text-xl text-primary">
                     {annotation.label}
@@ -935,13 +1090,13 @@ function SummaryPanel({
                 </p>
               ) : null}
               <p className="mt-2 text-sm leading-6 text-muted">
-                {annotation.note || "No note entered."}
+                {annotation.note || copy.noNote}
               </p>
             </article>
           ))
         ) : (
           <p className="border border-line bg-background p-3 text-sm leading-6 text-muted">
-            No saved grouped annotations yet.
+            {copy.noAnnotations}
           </p>
         )}
       </div>
@@ -951,6 +1106,7 @@ function SummaryPanel({
       {expanded ? (
         <PayloadModal
           payloadText={payloadText}
+          copy={copy}
           onClose={() => setExpanded(false)}
         />
       ) : null}
@@ -960,9 +1116,11 @@ function SummaryPanel({
 
 function PayloadModal({
   payloadText,
+  copy,
   onClose
 }: {
   payloadText: string;
+  copy: CaseAuditCopy;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -988,10 +1146,10 @@ function PayloadModal({
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-wash px-5 py-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-              Expanded mock payload
+              {copy.expandedPayload}
             </p>
             <h2 className="mt-1 font-display text-3xl text-primary">
-              Case audit annotation data
+              {copy.payloadTitle}
             </h2>
           </div>
           <button
@@ -999,7 +1157,7 @@ function PayloadModal({
             onClick={onClose}
             className="border border-line bg-background px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary"
           >
-            Close
+            {copy.close}
           </button>
         </div>
         <pre className="max-h-[72vh] overflow-auto bg-ink p-5 font-mono text-xs leading-6 text-white">
@@ -1014,6 +1172,7 @@ function FloatingDiagnosisPanel({
   mode,
   rankedDiagnoses,
   userDiagnosisDraft,
+  copy,
   onMouseEnter,
   onMouseLeave,
   onExpand,
@@ -1027,6 +1186,7 @@ function FloatingDiagnosisPanel({
   mode: TrayMode;
   rankedDiagnoses: RankedDiagnosis[];
   userDiagnosisDraft: UserDiagnosisDraft;
+  copy: CaseAuditCopy;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onExpand: () => void;
@@ -1091,16 +1251,16 @@ function FloatingDiagnosisPanel({
         >
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-              Diagnostic reasoning / mock ranked diagnoses
+              {copy.diagnosticTray} / {copy.diagnosticTraySubtitle}
             </p>
             <h2 className="font-display text-2xl text-primary">
               {isCollapsed
-                ? "Open mock ranking tray"
-                : "Mock ranking based on demo annotations only"}
+                ? copy.openTray
+                : copy.rankingDisclaimer}
             </h2>
           </div>
           <span className="border border-primary bg-primary px-4 py-2 text-sm text-white">
-            {isExpanded ? "Expanded" : isPeek ? "Peek" : isIntro ? "Preview" : "Open"}
+            {isExpanded ? copy.collapse : isPeek ? "Peek" : isIntro ? "Preview" : "Open"}
           </span>
         </button>
 
@@ -1120,7 +1280,7 @@ function FloatingDiagnosisPanel({
                   }}
                   className="border border-line bg-paper px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary"
                 >
-                  Collapse
+                  {copy.collapse}
                 </button>
               </div>
             ) : null}
@@ -1130,7 +1290,7 @@ function FloatingDiagnosisPanel({
                   <div className="grid gap-3 xl:grid-cols-[1fr_auto]">
                     <div className="min-w-0">
                       <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                        Mock diagnosis candidate
+                        {copy.mockDiagnosisCandidate}
                       </p>
                       <h3 className="mt-1 font-display text-2xl leading-7 text-primary">
                       {diagnosis.name}
@@ -1138,7 +1298,7 @@ function FloatingDiagnosisPanel({
                     </div>
                     <div className="flex flex-wrap items-start gap-2 xl:justify-end">
                       <label className="block">
-                        <span className="sr-only">Diagnosis status</span>
+                        <span className="sr-only">{copy.diagnosisStatus}</span>
                         <select
                           value={diagnosis.status}
                           onChange={(event) =>
@@ -1161,7 +1321,7 @@ function FloatingDiagnosisPanel({
                         onClick={() => onDeleteDiagnosis(diagnosis.id)}
                         className="border border-line bg-background px-2 py-1 font-mono text-[11px] uppercase tracking-[0.1em] text-muted hover:border-accent hover:text-accent"
                       >
-                        Delete
+                        {copy.delete}
                       </button>
                     </div>
                   </div>
@@ -1192,11 +1352,11 @@ function FloatingDiagnosisPanel({
           <div className={isExpanded ? "block" : "hidden"}>
             <form onSubmit={onAddDiagnosis} className="border border-line bg-paper p-4">
               <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-                Add clinician diagnosis
+                {copy.addClinicianDiagnosis}
               </p>
               <label className="mt-3 block">
                 <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                  Diagnosis
+                  {copy.diagnosis}
                 </span>
                 <input
                   value={userDiagnosisDraft.name}
@@ -1212,7 +1372,7 @@ function FloatingDiagnosisPanel({
               </label>
               <label className="mt-3 block">
                 <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                  Status
+                  {copy.status}
                 </span>
                 <select
                   value={userDiagnosisDraft.status}
@@ -1233,7 +1393,7 @@ function FloatingDiagnosisPanel({
               </label>
               <label className="mt-3 block">
                 <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                  Note
+                  {copy.note}
                 </span>
                 <textarea
                   value={userDiagnosisDraft.note}
@@ -1250,7 +1410,7 @@ function FloatingDiagnosisPanel({
                 type="submit"
                 className="mt-3 w-full border border-accent bg-accent px-4 py-2 text-sm text-white hover:bg-background hover:text-accent"
               >
-                Add diagnosis
+                {copy.addDiagnosis}
               </button>
             </form>
           </div>

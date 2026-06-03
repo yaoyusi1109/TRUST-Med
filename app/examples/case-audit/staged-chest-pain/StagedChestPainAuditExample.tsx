@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { LanguageToggle, useLanguage } from "@/components/LanguageProvider";
 import { PageShell } from "@/components/PageShell";
 import type {
   ConceptNode,
@@ -32,6 +33,157 @@ const ANNOTATION_LABELS = [
   "uncertainty",
   "useful clinical clue"
 ] as const;
+
+const stagedCopy = {
+  en: {
+    eyebrow: "Staged case audit",
+    title: "Staged Chest Pain Case Audit",
+    subtitle: "分阶段胸痛病历审计",
+    intro:
+      "Simulated staged audit. Information is progressively revealed for demonstration only. Not clinical guidance.",
+    secondaryIntro: "模拟分阶段审计。信息仅为演示目的逐步披露，非临床指导。",
+    back: "Back to case audit",
+    source: "Source",
+    sourceScenario: "Source scenario",
+    sourceUnavailable: "Source scenario unavailable",
+    sourceUnavailableBody: "The staged audit expected source scenario data, but it was not found in static mock data.",
+    currentStage: "Current Stage",
+    disclosureNotice:
+      "Later-stage details remain locked until their stage. The information below is simulated and progressively revealed for data-collection demonstration only.",
+    stage: "Stage",
+    locked: "Locked details",
+    newlyRevealed: "Newly Revealed Information",
+    cumulativeKnown: "Cumulative Known Information",
+    keyNegatives: "Key Negatives",
+    missingInformation: "Missing Information",
+    redFlags: "Red Flags",
+    diagnosisJudgment: "Diagnosis Judgment",
+    judgmentSubtitle: "Update differential diagnosis as information changes",
+    copyPrevious: "Copy previous stage judgment",
+    conceptTargetDiagnosis: "Concept target: diagnosis",
+    conceptTargetJudgment: "Concept target: judgment",
+    status: "Status",
+    confidence: "Confidence",
+    supportingEvidence: "Supporting evidence",
+    evidenceAgainst: "Evidence against",
+    nextQuestionOrTest: "Next question or next test",
+    clinicianNote: "Clinician note",
+    currentRecommendation: "Current-Stage Recommendation",
+    nextQuestion: "Next most important question",
+    nextTest: "Next test",
+    immediateSafetyAction: "Immediate safety action",
+    triageEscalation: "Triage / escalation recommendation",
+    uncertaintyStatement: "Uncertainty statement",
+    segmentAnnotation: "Segment annotation",
+    selectedSegments: "Selected Segments",
+    annotationLabel: "Annotation label",
+    conceptTargetSegments: "Concept target: selected segments",
+    concept: "Concept",
+    noneAttached: "None attached",
+    note: "Note",
+    saveAnnotation: "Save annotation",
+    medicalConceptSearch: "Medical Concept Search",
+    activeTarget: "Active target",
+    parents: "Parent concept(s)",
+    topLevelConcept: "Top level concept",
+    children: "Child concept(s)",
+    noChildren: "None",
+    attachConcept: "Attach concept",
+    judgmentTimeline: "Judgment Evolution Timeline",
+    pending: "Pending",
+    notRecorded: "Not recorded",
+    mustNotMiss: "Must-not-miss diagnosis",
+    recommendation: "Recommendation",
+    finalReview: "Final Review",
+    finalSubtitle: "Staged judgment summary",
+    topDiagnosisOverTime: "Top diagnosis over time",
+    safetyIndicators: "Mock safety indicators",
+    rubricAlignment: "Rubric Alignment",
+    reviewerNotes: "Reviewer notes",
+    mockPayload: "Mock Staged Audit Payload",
+    payloadTitle: "Staged audit data",
+    inspect: "Inspect",
+    expandedPayload: "Expanded staged payload",
+    close: "Close",
+    previousStage: "Previous stage",
+    nextStage: "Next stage"
+  },
+  zh: {
+    eyebrow: "分阶段病历审计",
+    title: "分阶段胸痛病历审计",
+    subtitle: "Staged Chest Pain Case Audit",
+    intro: "模拟分阶段审计。信息仅为演示目的逐步披露，非临床指导。",
+    secondaryIntro:
+      "Simulated staged audit. Information is progressively revealed for demonstration only. Not clinical guidance.",
+    back: "返回病历审计",
+    source: "来源",
+    sourceScenario: "来源病例",
+    sourceUnavailable: "来源病例不可用",
+    sourceUnavailableBody: "分阶段审计需要的来源病例未在静态模拟数据中找到。",
+    currentStage: "当前阶段",
+    disclosureNotice:
+      "后续阶段细节会保持锁定，直到进入对应阶段。下方信息均为模拟演示数据，仅用于数据采集流程展示。",
+    stage: "阶段",
+    locked: "细节锁定",
+    newlyRevealed: "新披露信息",
+    cumulativeKnown: "累计已知信息",
+    keyNegatives: "关键阴性发现",
+    missingInformation: "缺失信息",
+    redFlags: "红旗征象",
+    diagnosisJudgment: "诊断判断",
+    judgmentSubtitle: "随信息变化更新鉴别诊断",
+    copyPrevious: "复制上一阶段判断",
+    conceptTargetDiagnosis: "概念目标：诊断",
+    conceptTargetJudgment: "概念目标：阶段判断",
+    status: "状态",
+    confidence: "置信度",
+    supportingEvidence: "支持证据",
+    evidenceAgainst: "反向证据",
+    nextQuestionOrTest: "下一问题或检查",
+    clinicianNote: "临床医生备注",
+    currentRecommendation: "当前阶段建议",
+    nextQuestion: "下一步最重要问题",
+    nextTest: "下一项检查",
+    immediateSafetyAction: "即时安全处置",
+    triageEscalation: "分诊 / 升级处置建议",
+    uncertaintyStatement: "不确定性说明",
+    segmentAnnotation: "片段标注",
+    selectedSegments: "已选片段",
+    annotationLabel: "标注标签",
+    conceptTargetSegments: "概念目标：已选片段",
+    concept: "概念",
+    noneAttached: "未附加",
+    note: "备注",
+    saveAnnotation: "保存标注",
+    medicalConceptSearch: "医学概念检索",
+    activeTarget: "当前目标",
+    parents: "父级概念",
+    topLevelConcept: "顶层概念",
+    children: "子级概念",
+    noChildren: "无",
+    attachConcept: "附加概念",
+    judgmentTimeline: "判断演变时间线",
+    pending: "待填写",
+    notRecorded: "未记录",
+    mustNotMiss: "不可漏诊的诊断",
+    recommendation: "建议",
+    finalReview: "最终复盘",
+    finalSubtitle: "分阶段判断总结",
+    topDiagnosisOverTime: "各阶段首要诊断",
+    safetyIndicators: "模拟安全性指标",
+    rubricAlignment: "评分标准对齐",
+    reviewerNotes: "复盘备注",
+    mockPayload: "模拟分阶段审计数据负载",
+    payloadTitle: "分阶段审计数据",
+    inspect: "查看",
+    expandedPayload: "展开的分阶段数据负载",
+    close: "关闭",
+    previousStage: "上一阶段",
+    nextStage: "下一阶段"
+  }
+} as const;
+
+type StagedCopy = Record<keyof (typeof stagedCopy)["en"], string>;
 
 type AnnotationLabel = (typeof ANNOTATION_LABELS)[number];
 type DiagnosisStatus = StagedDiagnosisJudgment["status"];
@@ -186,6 +338,8 @@ export function StagedChestPainAuditExample({
   scenario?: Scenario;
   concepts: ConceptNode[];
 }) {
+  const { language } = useLanguage();
+  const copy = stagedCopy[language];
   const [activeStageIndex, setActiveStageIndex] = useState(0);
   const [selectedSegmentIds, setSelectedSegmentIds] = useState<string[]>([]);
   const [annotationLabel, setAnnotationLabel] =
@@ -238,16 +392,16 @@ export function StagedChestPainAuditExample({
   if (!scenario) {
     return (
       <PageShell
-        eyebrow="Mock staged audit"
-        title="Source scenario unavailable"
-        intro={`The staged audit expected source scenario ${example.sourceScenarioId}, but it was not found in static mock data.`}
+        eyebrow={copy.eyebrow}
+        title={copy.sourceUnavailable}
+        intro={`${copy.sourceUnavailableBody} (${example.sourceScenarioId})`}
       >
         <div className="mt-8 border border-line bg-paper p-6">
           <Link
             href="/examples"
             className="border border-primary bg-primary px-4 py-2 text-sm text-white hover:bg-background hover:text-primary"
           >
-            Back to examples
+            {copy.back}
           </Link>
         </div>
       </PageShell>
@@ -385,9 +539,9 @@ export function StagedChestPainAuditExample({
       title: stage.title,
       topDiagnosis: top
         ? top.candidate.displayZh ?? top.candidate.name
-        : "Not recorded",
-      topStatus: top?.judgment ? statusLabel(top.judgment.status) : "Pending",
-      topConfidence: top?.judgment?.confidence ?? "pending",
+        : copy.notRecorded,
+      topStatus: top?.judgment ? statusLabel(top.judgment.status) : copy.pending,
+      topConfidence: top?.judgment?.confidence ?? copy.pending,
       mustNotMiss,
       evidenceAdded: stageAnnotations.map((annotation) => annotation.label),
       clinicianNote: top?.judgment?.note ?? "",
@@ -423,25 +577,38 @@ export function StagedChestPainAuditExample({
 
   return (
     <PageShell
-      eyebrow="Staged case audit"
-      title={scenario.title}
-      intro={example.disclaimer}
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      intro={copy.intro}
     >
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          href="/examples/case-audit"
-          className="border border-line bg-background px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary"
-        >
-          Back to case audit
-        </Link>
-        <span className="border border-accent bg-background px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-accent">
-          Source: {scenario.id} / {scenario.category} / {scenario.difficulty}
-        </span>
+      <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="font-display text-2xl text-muted">{copy.subtitle}</p>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
+            {copy.secondaryIntro}
+          </p>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            {copy.sourceScenario}: {scenario.title}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href="/examples/case-audit"
+              className="border border-line bg-background px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary"
+            >
+              {copy.back}
+            </Link>
+            <span className="border border-accent bg-background px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-accent">
+              {copy.source}: {scenario.id} / {scenario.category} / {scenario.difficulty}
+            </span>
+          </div>
+        </div>
+        <LanguageToggle compact />
       </div>
 
       <StageStepper
         stages={example.stages}
         activeIndex={activeStageIndex}
+        copy={copy}
         onSelect={setActiveStageIndex}
       />
 
@@ -449,14 +616,14 @@ export function StagedChestPainAuditExample({
         <main className="space-y-6">
           <section className="border border-line bg-paper p-5">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-              Current stage
+              {copy.currentStage}
             </p>
             <h2 className="mt-2 font-display text-3xl text-primary">
               {activeStage.title}
             </h2>
             <p className="mt-2 leading-7 text-muted">{activeStage.description}</p>
             <p className="mt-4 border border-line bg-wash p-3 text-sm leading-6 text-muted">
-              Later-stage details remain locked until their stage. The information below is simulated and progressively revealed for data-collection demonstration only.
+              {copy.disclosureNotice}
             </p>
           </section>
 
@@ -464,6 +631,7 @@ export function StagedChestPainAuditExample({
             stage={activeStage}
             visibleSegments={visibleSegments}
             selectedSegmentIds={selectedSegmentIds}
+            copy={copy}
             onToggleSegment={toggleSegment}
           />
 
@@ -477,6 +645,7 @@ export function StagedChestPainAuditExample({
             candidates={example.diagnosisCandidates}
             judgments={judgments}
             canCopyPrevious={activeStageIndex > 0}
+            copy={copy}
             onPatch={patchJudgment}
             onCopyPrevious={copyPreviousJudgment}
             onConceptTarget={(diagnosisId, type) =>
@@ -486,6 +655,7 @@ export function StagedChestPainAuditExample({
 
           <StageRecommendationPanel
             recommendation={currentRecommendation}
+            copy={copy}
             onPatch={(patch) => patchRecommendation(activeStage.stageId, patch)}
           />
 
@@ -494,6 +664,7 @@ export function StagedChestPainAuditExample({
               scenario={scenario}
               timeline={timeline}
               reviewerNotes={reviewerNotes}
+              copy={copy}
               onReviewerNotesChange={setReviewerNotes}
             />
           ) : null}
@@ -505,7 +676,7 @@ export function StagedChestPainAuditExample({
               disabled={activeStageIndex === 0}
               className="border border-line bg-background px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Previous stage
+              {copy.previousStage}
             </button>
             <button
               type="button"
@@ -517,7 +688,7 @@ export function StagedChestPainAuditExample({
               disabled={activeStageIndex === example.stages.length - 1}
               className="border border-primary bg-primary px-4 py-2 text-sm text-white hover:bg-background hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Next stage
+              {copy.nextStage}
             </button>
           </div>
         </main>
@@ -528,6 +699,7 @@ export function StagedChestPainAuditExample({
             annotationLabel={annotationLabel}
             annotationNote={annotationNote}
             annotationConcept={annotationConcept}
+            copy={copy}
             onLabelChange={setAnnotationLabel}
             onNoteChange={setAnnotationNote}
             onSubmit={saveAnnotation}
@@ -542,13 +714,15 @@ export function StagedChestPainAuditExample({
             query={conceptQuery}
             results={conceptResults}
             activeTarget={activeConceptTarget}
+            copy={copy}
             onQueryChange={setConceptQuery}
             onAttach={attachConcept}
           />
-          <EvolutionTimeline timeline={timeline} />
+          <EvolutionTimeline timeline={timeline} copy={copy} />
           <PayloadPreview
             payload={payloadPreview}
             open={payloadOpen}
+            copy={copy}
             onOpen={() => setPayloadOpen(true)}
             onClose={() => setPayloadOpen(false)}
           />
@@ -561,10 +735,12 @@ export function StagedChestPainAuditExample({
 function StageStepper({
   stages,
   activeIndex,
+  copy,
   onSelect
 }: {
   stages: StagedAuditExample["stages"];
   activeIndex: number;
+  copy: StagedCopy;
   onSelect: (index: number) => void;
 }) {
   return (
@@ -586,12 +762,12 @@ function StageStepper({
             }`}
           >
             <span className="font-mono text-[10px] uppercase tracking-[0.12em]">
-              Stage {index + 1}
+              {copy.stage} {index + 1}
             </span>
             <span className="mt-1 block text-sm leading-5">{stage.title}</span>
             {!revealed ? (
               <span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.12em]">
-                Locked details
+                {copy.locked}
               </span>
             ) : null}
           </button>
@@ -632,18 +808,20 @@ function ProgressiveInformation({
   stage,
   visibleSegments,
   selectedSegmentIds,
+  copy,
   onToggleSegment
 }: {
   stage: StagedAuditExample["stages"][number];
   visibleSegments: StagedAuditSegment[];
   selectedSegmentIds: string[];
+  copy: StagedCopy;
   onToggleSegment: (segmentId: string) => void;
 }) {
   return (
     <section className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
       <div className="border border-line bg-paper p-5">
         <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-          Newly revealed information
+          {copy.newlyRevealed}
         </p>
         <div className="mt-4 space-y-2">
           {stage.newSegments.map((segment) => (
@@ -658,25 +836,25 @@ function ProgressiveInformation({
       </div>
       <div className="space-y-5">
         <InfoGroup
-          title="Cumulative known information"
+          title={copy.cumulativeKnown}
           segments={visibleSegments}
           selectedSegmentIds={selectedSegmentIds}
           onToggleSegment={onToggleSegment}
         />
         <InfoGroup
-          title="Key negatives"
+          title={copy.keyNegatives}
           segments={stage.keyNegatives}
           selectedSegmentIds={selectedSegmentIds}
           onToggleSegment={onToggleSegment}
         />
         <InfoGroup
-          title="Missing information"
+          title={copy.missingInformation}
           segments={stage.missingInformation}
           selectedSegmentIds={selectedSegmentIds}
           onToggleSegment={onToggleSegment}
         />
         <InfoGroup
-          title="Red flags"
+          title={copy.redFlags}
           segments={stage.redFlags}
           selectedSegmentIds={selectedSegmentIds}
           onToggleSegment={onToggleSegment}
@@ -745,6 +923,7 @@ function DiagnosisJudgmentPanel({
   candidates,
   judgments,
   canCopyPrevious,
+  copy,
   onPatch,
   onCopyPrevious,
   onConceptTarget
@@ -753,6 +932,7 @@ function DiagnosisJudgmentPanel({
   candidates: StagedDiagnosisCandidate[];
   judgments: Record<string, StagedDiagnosisJudgment>;
   canCopyPrevious: boolean;
+  copy: StagedCopy;
   onPatch: (
     stageId: string,
     diagnosisId: string,
@@ -767,10 +947,10 @@ function DiagnosisJudgmentPanel({
   return (
     <section className="border border-line bg-paper p-5">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Per-stage diagnostic judgment
+        {copy.diagnosisJudgment}
       </p>
       <h2 className="mt-2 font-display text-3xl text-primary">
-        Update differential as information changes
+        {copy.judgmentSubtitle}
       </h2>
       <div className="mt-5 grid gap-4">
         {candidates.map((candidate) => {
@@ -793,7 +973,7 @@ function DiagnosisJudgmentPanel({
                       onClick={() => onCopyPrevious(candidate.id)}
                       className="border border-line bg-paper px-3 py-2 text-xs text-muted hover:border-primary hover:text-primary"
                     >
-                      Copy previous stage judgment
+                      {copy.copyPrevious}
                     </button>
                   ) : null}
                   <button
@@ -801,21 +981,21 @@ function DiagnosisJudgmentPanel({
                     onClick={() => onConceptTarget(candidate.id, "diagnosis")}
                     className="border border-line bg-paper px-3 py-2 text-xs text-muted hover:border-primary hover:text-primary"
                   >
-                    Concept target: diagnosis
+                    {copy.conceptTargetDiagnosis}
                   </button>
                   <button
                     type="button"
                     onClick={() => onConceptTarget(candidate.id, "judgment")}
                     className="border border-line bg-paper px-3 py-2 text-xs text-muted hover:border-primary hover:text-primary"
                   >
-                    Concept target: judgment
+                    {copy.conceptTargetJudgment}
                   </button>
                 </div>
               </div>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
                 <label>
                   <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                    Status
+                    {copy.status}
                   </span>
                   <select
                     value={judgment.status}
@@ -835,7 +1015,7 @@ function DiagnosisJudgmentPanel({
                 </label>
                 <label>
                   <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                    Confidence
+                    {copy.confidence}
                   </span>
                   <select
                     value={judgment.confidence}
@@ -854,11 +1034,11 @@ function DiagnosisJudgmentPanel({
                   </select>
                 </label>
                 {[
-                  ["supportingEvidence", "Supporting evidence"],
-                  ["evidenceAgainst", "Evidence against"],
-                  ["missingInformation", "Missing information"],
-                  ["nextQuestionOrTest", "Next question or next test"],
-                  ["note", "Clinician note"]
+                  ["supportingEvidence", copy.supportingEvidence],
+                  ["evidenceAgainst", copy.evidenceAgainst],
+                  ["missingInformation", copy.missingInformation],
+                  ["nextQuestionOrTest", copy.nextQuestionOrTest],
+                  ["note", copy.clinicianNote]
                 ].map(([field, label]) => (
                   <label key={field} className="md:col-span-2">
                     <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
@@ -886,23 +1066,25 @@ function DiagnosisJudgmentPanel({
 
 function StageRecommendationPanel({
   recommendation,
+  copy,
   onPatch
 }: {
   recommendation: StagedRecommendation;
+  copy: StagedCopy;
   onPatch: (patch: Partial<Omit<StagedRecommendation, "stageId">>) => void;
 }) {
   return (
     <section className="border border-line bg-paper p-5">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Current-stage recommendation
+        {copy.currentRecommendation}
       </p>
       <div className="mt-4 grid gap-3 md:grid-cols-2">
         {[
-          ["nextQuestion", "Next most important question"],
-          ["nextTest", "Next test"],
-          ["immediateSafetyAction", "Immediate safety action"],
-          ["triageEscalation", "Triage / escalation recommendation"],
-          ["uncertaintyStatement", "Uncertainty statement"]
+          ["nextQuestion", copy.nextQuestion],
+          ["nextTest", copy.nextTest],
+          ["immediateSafetyAction", copy.immediateSafetyAction],
+          ["triageEscalation", copy.triageEscalation],
+          ["uncertaintyStatement", copy.uncertaintyStatement]
         ].map(([field, label]) => (
           <label key={field} className={field === "uncertaintyStatement" ? "md:col-span-2" : ""}>
             <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
@@ -925,6 +1107,7 @@ function AnnotationPanel({
   annotationLabel,
   annotationNote,
   annotationConcept,
+  copy,
   onLabelChange,
   onNoteChange,
   onSubmit,
@@ -934,6 +1117,7 @@ function AnnotationPanel({
   annotationLabel: AnnotationLabel;
   annotationNote: string;
   annotationConcept?: ConceptSummary;
+  copy: StagedCopy;
   onLabelChange: (label: AnnotationLabel) => void;
   onNoteChange: (note: string) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -942,10 +1126,10 @@ function AnnotationPanel({
   return (
     <section className="border border-line bg-paper p-4">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Segment annotation
+        {copy.segmentAnnotation}
       </p>
       <p className="mt-2 text-sm leading-6 text-muted">
-        {selectedSegments.length} selected segment(s)
+        {selectedSegments.length} {copy.selectedSegments}
       </p>
       <div className="mt-3 max-h-36 space-y-2 overflow-auto">
         {selectedSegments.map((segment) => (
@@ -957,7 +1141,7 @@ function AnnotationPanel({
       <form onSubmit={onSubmit} className="mt-4 space-y-3">
         <label className="block">
           <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-            Annotation label
+            {copy.annotationLabel}
           </span>
           <select
             value={annotationLabel}
@@ -976,14 +1160,14 @@ function AnnotationPanel({
           onClick={onSetConceptTarget}
           className="w-full border border-line bg-wash px-3 py-2 text-xs text-muted hover:border-primary hover:text-primary"
         >
-          Concept target: selected segments
+          {copy.conceptTargetSegments}
         </button>
         <p className="text-sm leading-6 text-muted">
-          Concept: {annotationConcept?.label ?? "None attached"}
+          {copy.concept}: {annotationConcept?.label ?? copy.noneAttached}
         </p>
         <label className="block">
           <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-            Note
+            {copy.note}
           </span>
           <textarea
             value={annotationNote}
@@ -996,7 +1180,7 @@ function AnnotationPanel({
           disabled={!selectedSegments.length}
           className="w-full border border-primary bg-primary px-4 py-2 text-sm text-white hover:bg-background hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Save annotation
+          {copy.saveAnnotation}
         </button>
       </form>
     </section>
@@ -1007,22 +1191,24 @@ function ConceptSearchPanel({
   query,
   results,
   activeTarget,
+  copy,
   onQueryChange,
   onAttach
 }: {
   query: string;
   results: ConceptMatch[];
   activeTarget: { type: StagedConceptAttachment["targetType"]; id: string };
+  copy: StagedCopy;
   onQueryChange: (query: string) => void;
   onAttach: (node: ConceptNode) => void;
 }) {
   return (
     <section className="border border-line bg-paper p-4">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Mock concept search
+        {copy.medicalConceptSearch}
       </p>
       <p className="mt-2 text-sm leading-6 text-muted">
-        Active target: {activeTarget.type} / {activeTarget.id}
+        {copy.activeTarget}: {activeTarget.type} / {activeTarget.id}
       </p>
       <input
         value={query}
@@ -1034,25 +1220,25 @@ function ConceptSearchPanel({
         {results.map(({ node, ancestors, children }) => (
           <article key={node.id} className="border border-line bg-background p-3">
             <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-              Parents
+              {copy.parents}
             </p>
             <p className="mt-1 text-sm leading-6 text-muted">
               {ancestors.length
                 ? ancestors.map(conceptLabel).join(" -> ")
-                : "Top level concept"}
+                : copy.topLevelConcept}
             </p>
             <h3 className="mt-2 font-display text-xl text-primary">
               {conceptLabel(node)}
             </h3>
             <p className="mt-1 text-xs leading-5 text-muted">
-              Children: {children.length ? children.map(conceptLabel).join(" | ") : "None"}
+              {copy.children}: {children.length ? children.map(conceptLabel).join(" | ") : copy.noChildren}
             </p>
             <button
               type="button"
               onClick={() => onAttach(node)}
               className="mt-3 w-full border border-primary bg-background px-3 py-2 text-xs text-primary hover:bg-primary hover:text-white"
             >
-              Attach concept
+              {copy.attachConcept}
             </button>
           </article>
         ))}
@@ -1062,35 +1248,37 @@ function ConceptSearchPanel({
 }
 
 function EvolutionTimeline({
-  timeline
+  timeline,
+  copy
 }: {
   timeline: JudgmentTimelineItem[];
+  copy: StagedCopy;
 }) {
   return (
     <section className="border border-line bg-paper p-4">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Judgment evolution timeline
+        {copy.judgmentTimeline}
       </p>
       <div className="mt-4 space-y-3">
         {timeline.map((item, index) => (
           <article key={item.stageId} className="border-l-2 border-primary bg-background p-3">
             <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-              Stage {index + 1} / {item.title}
+              {copy.stage} {index + 1} / {item.title}
             </p>
             <h3 className="mt-1 font-display text-xl text-primary">
               {item.topDiagnosis}
             </h3>
             <p className="mt-1 text-sm leading-6 text-muted">
-              {item.topStatus} / confidence: {item.topConfidence}
+              {item.topStatus} / {copy.confidence}: {item.topConfidence}
             </p>
             {item.mustNotMiss.length ? (
               <p className="mt-1 text-sm leading-6 text-accent">
-                Must not miss: {item.mustNotMiss.join(", ")}
+                {copy.mustNotMiss}: {item.mustNotMiss.join(", ")}
               </p>
             ) : null}
             {item.recommendation?.triageEscalation ? (
               <p className="mt-1 text-sm leading-6 text-muted">
-                Recommendation: {item.recommendation.triageEscalation}
+                {copy.recommendation}: {item.recommendation.triageEscalation}
               </p>
             ) : null}
           </article>
@@ -1104,11 +1292,13 @@ function FinalReview({
   scenario,
   timeline,
   reviewerNotes,
+  copy,
   onReviewerNotesChange
 }: {
   scenario: Scenario;
   timeline: JudgmentTimelineItem[];
   reviewerNotes: string;
+  copy: StagedCopy;
   onReviewerNotesChange: (notes: string) => void;
 }) {
   const rubric = scenario.rubric.length
@@ -1124,15 +1314,15 @@ function FinalReview({
   return (
     <section className="border border-accent bg-paper p-5">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        Final review / adjudication
+        {copy.finalReview}
       </p>
       <h2 className="mt-2 font-display text-3xl text-primary">
-        Staged judgment summary
+        {copy.finalSubtitle}
       </h2>
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <div className="border border-line bg-background p-4">
           <h3 className="font-display text-2xl text-primary">
-            Top diagnosis over time
+            {copy.topDiagnosisOverTime}
           </h3>
           <ul className="mt-3 space-y-2 text-sm leading-6 text-muted">
             {timeline.map((item) => (
@@ -1144,7 +1334,7 @@ function FinalReview({
         </div>
         <div className="border border-line bg-background p-4">
           <h3 className="font-display text-2xl text-primary">
-            Mock safety indicators
+            {copy.safetyIndicators}
           </h3>
           <ul className="mt-3 space-y-2 text-sm leading-6 text-muted">
             <li>Premature closure risk: if ACS is not escalated after dynamic ECG change.</li>
@@ -1155,7 +1345,7 @@ function FinalReview({
       </div>
       <div className="mt-5 border border-line bg-background p-4">
         <h3 className="font-display text-2xl text-primary">
-          Source scenario rubric alignment
+            {copy.rubricAlignment}
         </h3>
         <div className="mt-3 grid gap-2">
           {rubric.map((item) => (
@@ -1172,7 +1362,7 @@ function FinalReview({
       </div>
       <label className="mt-5 block">
         <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-          Reviewer notes
+          {copy.reviewerNotes}
         </span>
         <textarea
           value={reviewerNotes}
@@ -1187,11 +1377,13 @@ function FinalReview({
 function PayloadPreview({
   payload,
   open,
+  copy,
   onOpen,
   onClose
 }: {
   payload: object;
   open: boolean;
+  copy: StagedCopy;
   onOpen: () => void;
   onClose: () => void;
 }) {
@@ -1201,10 +1393,10 @@ function PayloadPreview({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-accent">
-            Mock payload
+            {copy.mockPayload}
           </p>
           <h3 className="mt-2 font-display text-2xl text-primary">
-            Staged audit data
+            {copy.payloadTitle}
           </h3>
         </div>
         <button
@@ -1212,20 +1404,28 @@ function PayloadPreview({
           onClick={onOpen}
           className="border border-line bg-background px-3 py-2 text-sm text-muted hover:border-primary hover:text-primary"
         >
-          Inspect
+          {copy.inspect}
         </button>
       </div>
       <pre className="mt-4 max-h-80 overflow-auto border border-line bg-ink p-3 font-mono text-[11px] leading-5 text-white">
         {text}
       </pre>
       {open ? (
-        <PayloadModal text={text} onClose={onClose} />
+        <PayloadModal text={text} copy={copy} onClose={onClose} />
       ) : null}
     </section>
   );
 }
 
-function PayloadModal({ text, onClose }: { text: string; onClose: () => void }) {
+function PayloadModal({
+  text,
+  copy,
+  onClose
+}: {
+  text: string;
+  copy: StagedCopy;
+  onClose: () => void;
+}) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") onClose();
@@ -1245,14 +1445,14 @@ function PayloadModal({ text, onClose }: { text: string; onClose: () => void }) 
       >
         <div className="flex items-center justify-between gap-3 border-b border-line bg-wash px-5 py-4">
           <h2 className="font-display text-3xl text-primary">
-            Expanded staged payload
+            {copy.expandedPayload}
           </h2>
           <button
             type="button"
             onClick={onClose}
             className="border border-line bg-background px-4 py-2 text-sm text-muted hover:border-primary hover:text-primary"
           >
-            Close
+            {copy.close}
           </button>
         </div>
         <pre className="max-h-[74vh] overflow-auto bg-ink p-5 font-mono text-xs leading-6 text-white">

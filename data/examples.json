@@ -492,8 +492,8 @@
           "children": [
             {
               "id": "common-cold",
-              "display": "Common cold / viral cold",
-              "displayZh": "普通感冒 / 病毒性感冒",
+              "display": "Common cold",
+              "displayZh": "普通感冒",
               "synonyms": ["common cold", "viral cold", "cold", "病毒性感冒", "普通感冒"]
             },
             {
