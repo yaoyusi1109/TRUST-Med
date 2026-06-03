@@ -19,6 +19,13 @@ const cards = [
     description:
       "Compare two simulated model responses, mark good and bad response segments, score clinical dimensions, choose a preference, and preview a mock submission.",
     badge: examplesData.preferenceReview.category
+  },
+  {
+    title: "Staged chest pain audit",
+    href: "/examples/case-audit/staged-chest-pain",
+    description:
+      "Progressively reveal the source ECG chest-pain case, update diagnostic judgment at each stage, and review how clinician reasoning changes over time.",
+    badge: examplesData.stagedChestPainAudit.category
   }
 ];
 

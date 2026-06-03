@@ -124,8 +124,77 @@ export type ExamplePreferenceReview = {
   };
 };
 
+export type StagedAuditSegment = {
+  id: string;
+  label: string;
+  text: string;
+  category?: "new" | "negative" | "missing" | "redFlag";
+};
+
+export type StagedAuditStage = {
+  stageId: string;
+  title: string;
+  description: string;
+  newSegments: StagedAuditSegment[];
+  cumulativeSegmentIds: string[];
+  keyNegatives: StagedAuditSegment[];
+  missingInformation: StagedAuditSegment[];
+  redFlags: StagedAuditSegment[];
+};
+
+export type StagedDiagnosisCandidate = {
+  id: string;
+  name: string;
+  displayZh?: string;
+  conceptIds?: string[];
+};
+
+export type StagedDiagnosisJudgment = {
+  stageId: string;
+  diagnosisId: string;
+  status:
+    | "more_likely"
+    | "less_likely"
+    | "must_not_miss"
+    | "uncertain_needs_more_information";
+  confidence: "low" | "medium" | "high";
+  supportingEvidence: string;
+  evidenceAgainst: string;
+  missingInformation: string;
+  nextQuestionOrTest: string;
+  note: string;
+  conceptId?: string;
+};
+
+export type StagedRecommendation = {
+  stageId: string;
+  nextQuestion: string;
+  nextTest: string;
+  immediateSafetyAction: string;
+  triageEscalation: string;
+  uncertaintyStatement: string;
+};
+
+export type StagedConceptAttachment = {
+  id: string;
+  stageId: string;
+  targetType: "segment" | "diagnosis" | "judgment";
+  targetId: string;
+  conceptId: string;
+};
+
+export type StagedAuditExample = {
+  id: string;
+  sourceScenarioId: string;
+  category: string;
+  disclaimer: string;
+  stages: StagedAuditStage[];
+  diagnosisCandidates: StagedDiagnosisCandidate[];
+};
+
 export type ExamplesData = {
   caseAudit: ExampleCaseAudit;
   preferenceReview: ExamplePreferenceReview;
+  stagedChestPainAudit: StagedAuditExample;
   conceptHierarchy: ConceptNode[];
 };

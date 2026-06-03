@@ -216,6 +216,267 @@
       }
     }
   },
+  "stagedChestPainAudit": {
+    "id": "staged-chest-pain-audit-01",
+    "sourceScenarioId": "scenario-09",
+    "category": "Staged chest pain case audit",
+    "disclaimer": "Simulated staged audit. Information is progressively revealed for demonstration only. Not clinical guidance.",
+    "stages": [
+      {
+        "stageId": "initial-presentation",
+        "title": "Initial presentation",
+        "description": "Only the first complaint and minimal triage context are available.",
+        "newSegments": [
+          {
+            "id": "scp-s1-complaint",
+            "label": "Chief complaint",
+            "text": "37岁女性因反复心前区疼痛就诊，既往体健。"
+          },
+          {
+            "id": "scp-s1-context",
+            "label": "Initial context",
+            "text": "患者无高血压、糖尿病、高脂血症或吸烟史。"
+          }
+        ],
+        "cumulativeSegmentIds": ["scp-s1-complaint", "scp-s1-context"],
+        "keyNegatives": [
+          {
+            "id": "scp-s1-negative-risk",
+            "label": "Relevant negative",
+            "text": "传统冠心病危险因素不明显。"
+          }
+        ],
+        "missingInformation": [
+          {
+            "id": "scp-s1-missing-ecg",
+            "label": "Missing information",
+            "text": "尚未披露心电图动态变化、肌钙蛋白、生命体征和胸痛诱因。"
+          }
+        ],
+        "redFlags": [
+          {
+            "id": "scp-s1-redflag-recurrent",
+            "label": "Red flag",
+            "text": "反复心前区疼痛本身需要避免过早归因于低危原因。"
+          }
+        ]
+      },
+      {
+        "stageId": "focused-history",
+        "title": "Focused history",
+        "description": "Additional symptom timing and early course are revealed.",
+        "newSegments": [
+          {
+            "id": "scp-s2-recurrent",
+            "label": "History detail",
+            "text": "患者多次胸痛可在硝酸甘油等处理后缓解。"
+          },
+          {
+            "id": "scp-s2-pattern",
+            "label": "Symptom pattern",
+            "text": "胸痛呈反复发作过程，而不是单次短暂不适。"
+          }
+        ],
+        "cumulativeSegmentIds": ["scp-s1-complaint", "scp-s1-context", "scp-s2-recurrent", "scp-s2-pattern"],
+        "keyNegatives": [
+          {
+            "id": "scp-s2-negative-risk",
+            "label": "Relevant negative",
+            "text": "年轻、无传统危险因素不能排除急性冠脉综合征。"
+          }
+        ],
+        "missingInformation": [
+          {
+            "id": "scp-s2-missing-risk",
+            "label": "Missing information",
+            "text": "仍需了解疼痛性质、放射痛、伴随症状、血流动力学和初始心电图。"
+          }
+        ],
+        "redFlags": [
+          {
+            "id": "scp-s2-redflag-relief",
+            "label": "Red flag",
+            "text": "症状缓解不等于缺血风险解除。"
+          }
+        ]
+      },
+      {
+        "stageId": "vitals-exam",
+        "title": "Vitals and physical exam",
+        "description": "Basic bedside assessment is available, but definitive ECG evolution is not yet fully known.",
+        "newSegments": [
+          {
+            "id": "scp-s3-stable",
+            "label": "Bedside status",
+            "text": "模拟床旁评估显示患者当时可短暂无胸痛，未披露休克表现。"
+          },
+          {
+            "id": "scp-s3-monitoring",
+            "label": "Workflow clue",
+            "text": "需要持续心电监护并动态复查，而不是只看单次检查。"
+          }
+        ],
+        "cumulativeSegmentIds": ["scp-s1-complaint", "scp-s1-context", "scp-s2-recurrent", "scp-s2-pattern", "scp-s3-stable", "scp-s3-monitoring"],
+        "keyNegatives": [
+          {
+            "id": "scp-s3-negative-no-pain",
+            "label": "Relevant negative",
+            "text": "当前无胸痛不能作为低危出院或延迟评估的充分依据。"
+          }
+        ],
+        "missingInformation": [
+          {
+            "id": "scp-s3-missing-dynamic-ecg",
+            "label": "Missing information",
+            "text": "仍缺少动态心电图、肌钙蛋白趋势和胸痛发作时心电图。"
+          }
+        ],
+        "redFlags": [
+          {
+            "id": "scp-s3-redflag-monitor",
+            "label": "Red flag",
+            "text": "反复胸痛场景下，观察窗口内的动态变化可能比静态体征更关键。"
+          }
+        ]
+      },
+      {
+        "stageId": "early-tests",
+        "title": "Early tests",
+        "description": "ECG timeline and biomarkers are revealed from the source scenario.",
+        "newSegments": [
+          {
+            "id": "scp-s4-troponin",
+            "label": "Troponin",
+            "text": "肌钙蛋白T约2.52 ng/mL，后续约3.11 ng/mL，提示心肌损伤。"
+          },
+          {
+            "id": "scp-s4-ecg-second",
+            "label": "ECG change",
+            "text": "第二次胸痛后，I、aVL导联ST段轻度抬高趋势。"
+          },
+          {
+            "id": "scp-s4-ecg-third",
+            "label": "ECG change",
+            "text": "第三次胸痛后，下壁及V3-V6导联ST段压低，T波振幅增高、双支对称变尖。"
+          },
+          {
+            "id": "scp-s4-ecg-persistent",
+            "label": "ECG evolution",
+            "text": "复查仍见V3-V6 ST段压低、T波直立双支对称，夜间仍见ST段压低及R波递增不良。"
+          }
+        ],
+        "cumulativeSegmentIds": ["scp-s1-complaint", "scp-s1-context", "scp-s2-recurrent", "scp-s2-pattern", "scp-s3-stable", "scp-s3-monitoring", "scp-s4-troponin", "scp-s4-ecg-second", "scp-s4-ecg-third", "scp-s4-ecg-persistent"],
+        "keyNegatives": [
+          {
+            "id": "scp-s4-negative-no-classic-stemi",
+            "label": "Relevant negative",
+            "text": "没有典型持续ST段抬高并不能排除闭塞性冠脉事件。"
+          }
+        ],
+        "missingInformation": [
+          {
+            "id": "scp-s4-missing-cath",
+            "label": "Missing information",
+            "text": "仍需尽快明确冠脉解剖、血流动力学状态和再灌注路径。"
+          }
+        ],
+        "redFlags": [
+          {
+            "id": "scp-s4-redflag-dewinter",
+            "label": "Red flag",
+            "text": "V3-V6 ST段压低伴高尖/对称T波是前降支近端严重狭窄或闭塞的高危信号。"
+          },
+          {
+            "id": "scp-s4-redflag-delay",
+            "label": "Red flag",
+            "text": "等待病理性Q波或明确ST抬高后再介入可能延误再灌注。"
+          }
+        ]
+      },
+      {
+        "stageId": "final-review",
+        "title": "Final review",
+        "description": "Outcome and adjudication context are revealed for reflection.",
+        "newSegments": [
+          {
+            "id": "scp-s5-stemi-evolution",
+            "label": "Final ECG evolution",
+            "text": "次日清晨出现V1-V5 ST段抬高和病理性Q波。"
+          },
+          {
+            "id": "scp-s5-cath",
+            "label": "Angiography result",
+            "text": "急诊PCI发现前降支起始部完全闭塞，植入支架，术中出现急性左心衰并使用IABP。"
+          },
+          {
+            "id": "scp-s5-lesson",
+            "label": "Adjudication point",
+            "text": "核心复盘点是动态T波增高、对称变尖及广泛胸前导联ST段压低应被视为高危缺血信号。"
+          }
+        ],
+        "cumulativeSegmentIds": ["scp-s1-complaint", "scp-s1-context", "scp-s2-recurrent", "scp-s2-pattern", "scp-s3-stable", "scp-s3-monitoring", "scp-s4-troponin", "scp-s4-ecg-second", "scp-s4-ecg-third", "scp-s4-ecg-persistent", "scp-s5-stemi-evolution", "scp-s5-cath", "scp-s5-lesson"],
+        "keyNegatives": [
+          {
+            "id": "scp-s5-negative-reassurance",
+            "label": "Relevant negative",
+            "text": "年轻、无危险因素、胸痛缓解、无ST抬高均不应作为排除高危ACS的理由。"
+          }
+        ],
+        "missingInformation": [
+          {
+            "id": "scp-s5-missing-review",
+            "label": "Review question",
+            "text": "复盘时应记录哪一条信息最早足以触发紧急胸痛中心/心内科路径。"
+          }
+        ],
+        "redFlags": [
+          {
+            "id": "scp-s5-redflag-closure",
+            "label": "Premature closure risk",
+            "text": "过早归类为低危NSTEMI、非心源性胸痛或等待典型STEMI表现均是安全风险。"
+          }
+        ]
+      }
+    ],
+    "diagnosisCandidates": [
+      {
+        "id": "dx-acs-mi",
+        "name": "Acute coronary syndrome / myocardial infarction",
+        "displayZh": "急性冠脉综合征 / 心肌梗死",
+        "conceptIds": ["acute-coronary-syndrome", "myocardial-infarction"]
+      },
+      {
+        "id": "dx-pe",
+        "name": "Pulmonary embolism",
+        "displayZh": "肺栓塞",
+        "conceptIds": ["pulmonary-embolism"]
+      },
+      {
+        "id": "dx-dissection",
+        "name": "Aortic dissection",
+        "displayZh": "主动脉夹层",
+        "conceptIds": ["aortic-dissection"]
+      },
+      {
+        "id": "dx-pneumonia",
+        "name": "Pneumonia or respiratory infection",
+        "displayZh": "肺炎或呼吸道感染",
+        "conceptIds": ["pneumonia", "respiratory-infection"]
+      },
+      {
+        "id": "dx-gerd",
+        "name": "GERD / reflux",
+        "displayZh": "胃食管反流",
+        "conceptIds": ["gastroesophageal-reflux"]
+      },
+      {
+        "id": "dx-msk",
+        "name": "Musculoskeletal chest pain",
+        "displayZh": "肌肉骨骼性胸痛",
+        "conceptIds": ["costochondritis"]
+      }
+    ]
+  },
   "conceptHierarchy": [
     {
       "id": "respiratory-infection",
@@ -248,6 +509,96 @@
           "display": "Bacterial pneumonia",
           "displayZh": "细菌性肺炎",
           "synonyms": ["bacterial pneumonia", "pneumonia", "细菌性肺炎", "肺炎"]
+        }
+      ]
+    },
+    {
+      "id": "chest-pain",
+      "display": "Chest pain",
+      "displayZh": "胸痛",
+      "synonyms": ["chest pain", "胸痛", "心前区疼痛"],
+      "children": [
+        {
+          "id": "cardiac-chest-pain",
+          "display": "Cardiac chest pain",
+          "displayZh": "心源性胸痛",
+          "synonyms": ["cardiac chest pain", "ischemic chest pain", "心源性胸痛", "缺血性胸痛"],
+          "children": [
+            {
+              "id": "acute-coronary-syndrome",
+              "display": "Acute coronary syndrome",
+              "displayZh": "急性冠脉综合征",
+              "synonyms": ["ACS", "acute coronary syndrome", "急性冠脉综合征", "急性冠状动脉综合征"]
+            },
+            {
+              "id": "myocardial-infarction",
+              "display": "Myocardial infarction",
+              "displayZh": "心肌梗死",
+              "synonyms": ["MI", "myocardial infarction", "heart attack", "心肌梗死", "心梗"]
+            }
+          ]
+        },
+        {
+          "id": "vascular-emergency",
+          "display": "Vascular emergency",
+          "displayZh": "血管急症",
+          "synonyms": ["vascular emergency", "血管急症"],
+          "children": [
+            {
+              "id": "aortic-dissection",
+              "display": "Aortic dissection",
+              "displayZh": "主动脉夹层",
+              "synonyms": ["aortic dissection", "dissection", "主动脉夹层"]
+            }
+          ]
+        },
+        {
+          "id": "pulmonary-cause",
+          "display": "Pulmonary cause",
+          "displayZh": "肺部原因",
+          "synonyms": ["pulmonary cause", "lung cause", "肺部原因"],
+          "children": [
+            {
+              "id": "pulmonary-embolism",
+              "display": "Pulmonary embolism",
+              "displayZh": "肺栓塞",
+              "synonyms": ["PE", "pulmonary embolism", "肺栓塞"]
+            },
+            {
+              "id": "pneumonia",
+              "display": "Pneumonia",
+              "displayZh": "肺炎",
+              "synonyms": ["pneumonia", "respiratory infection", "肺炎", "呼吸道感染"]
+            }
+          ]
+        },
+        {
+          "id": "gastrointestinal-cause",
+          "display": "Gastrointestinal cause",
+          "displayZh": "消化道原因",
+          "synonyms": ["gastrointestinal cause", "GI cause", "消化道原因"],
+          "children": [
+            {
+              "id": "gastroesophageal-reflux",
+              "display": "Gastroesophageal reflux",
+              "displayZh": "胃食管反流",
+              "synonyms": ["GERD", "reflux", "gastroesophageal reflux", "胃食管反流", "反流"]
+            }
+          ]
+        },
+        {
+          "id": "musculoskeletal-cause",
+          "display": "Musculoskeletal cause",
+          "displayZh": "肌肉骨骼原因",
+          "synonyms": ["musculoskeletal cause", "chest wall pain", "肌肉骨骼原因", "胸壁痛"],
+          "children": [
+            {
+              "id": "costochondritis",
+              "display": "Costochondritis / chest wall pain",
+              "displayZh": "肋软骨炎 / 胸壁痛",
+              "synonyms": ["costochondritis", "chest wall pain", "musculoskeletal chest pain", "肋软骨炎", "胸壁痛"]
+            }
+          ]
         }
       ]
     }
