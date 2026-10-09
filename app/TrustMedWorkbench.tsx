@@ -166,33 +166,6 @@ const COLLABORATION_SITES: CollaborationSite[] = [
     longitude: -122.42,
     role: "Prospective collaborator"
   },
-  {
-    city: "Nanjing",
-    institution: "Nanjing University",
-    country: "China",
-    clinicians: 21,
-    latitude: 32.06,
-    longitude: 118.8,
-    role: "Research partner"
-  },
-  {
-    city: "Shanghai",
-    institution: "Tertiary hospital network",
-    country: "China",
-    clinicians: 9,
-    latitude: 31.23,
-    longitude: 121.47,
-    role: "Prospective collaborator"
-  },
-  {
-    city: "Beijing",
-    institution: "Clinical informatics group",
-    country: "China",
-    clinicians: 7,
-    latitude: 39.9,
-    longitude: 116.4,
-    role: "Prospective collaborator"
-  }
 ];
 
 const MOCK_FEEDBACK: FeedbackNote[] = [
@@ -242,7 +215,7 @@ const MOCK_FEEDBACK: FeedbackNote[] = [
 
 // ── Root component ─────────────────────────────────────────────────────────
 
-export function TrustMedWorkbench() {
+export function TrustMedWorkbench({ onLogout }: { onLogout: () => void }) {
   const { language } = useLanguage();
   const copy = workbenchCopy[language];
   const [activeSection, setActiveSection] = useState<SectionId>("battle");
@@ -310,8 +283,15 @@ export function TrustMedWorkbench() {
           <span className="font-mono text-xs uppercase tracking-[0.16em] text-muted">
             {activeNavLabel}
           </span>
-          <div className="ml-auto">
+          <div className="ml-auto flex flex-shrink-0 items-center gap-3">
             <LanguageToggle compact />
+            <button
+              type="button"
+              onClick={onLogout}
+              className="rounded border border-line px-3 py-1.5 text-sm text-muted transition-colors hover:bg-wash hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            >
+              {language === "zh" ? "退出登录" : "Log out"}
+            </button>
           </div>
         </header>
 
@@ -349,9 +329,6 @@ function ClinicalMapPanel() {
   );
   const usClinicians = COLLABORATION_SITES.filter(
     (site) => site.country === "United States"
-  ).reduce((sum, site) => sum + site.clinicians, 0);
-  const chinaClinicians = COLLABORATION_SITES.filter(
-    (site) => site.country === "China"
   ).reduce((sum, site) => sum + site.clinicians, 0);
 
   return (
@@ -399,7 +376,7 @@ function ClinicalMapPanel() {
             {[
               [copy.stats[0], COLLABORATION_SITES.length],
               [copy.stats[1], totalClinicians],
-              [copy.stats[2], 2]
+              [copy.stats[2], new Set(COLLABORATION_SITES.map((site) => site.country)).size]
             ].map(([label, value]) => (
               <div key={label} className="border-r border-line p-4 last:border-r-0">
                 <p className="font-display text-3xl text-primary">{value}</p>
@@ -437,7 +414,6 @@ function ClinicalMapPanel() {
             </p>
             <div className="mt-4 space-y-3">
               <MapBalance label={language === "zh" ? "美国" : "United States"} value={usClinicians} total={totalClinicians} />
-              <MapBalance label={language === "zh" ? "中国" : "China"} value={chinaClinicians} total={totalClinicians} />
             </div>
           </div>
 
@@ -1178,9 +1154,6 @@ function AboutPanel() {
           <h3 className="font-display text-2xl text-primary">{copy.affiliation}</h3>
           <p className="mt-3 leading-7 text-muted">
             Johns Hopkins University — Systems Engineering
-          </p>
-          <p className="mt-1 leading-7 text-muted">
-            Nanjing University — Computer Science
           </p>
         </div>
 

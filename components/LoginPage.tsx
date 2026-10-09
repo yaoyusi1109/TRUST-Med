@@ -307,7 +307,7 @@ function RegisterStep1({
                   : "border-line bg-background text-muted hover:border-primary hover:text-primary"
               }`}
             >
-              {r === "us" ? "🇺🇸  United States" : "🇨🇳  中国大陆"}
+              {r === "us" ? "United States" : (isZh ? "其他地区" : "Other regions")}
             </button>
           ))}
         </div>
@@ -654,8 +654,8 @@ function LeftPanel() {
         <div className="border-l-2 border-white/30 pl-5">
           <p className="font-display text-xl leading-8 text-white/90">
             {isZh
-              ? "由真实医生评判，在美中两种临床规范下跨辖区测评医学大模型。"
-              : "Evaluated by practicing clinicians. Tested across US and Chinese clinical standards."}
+              ? "由执业医生直接评判，依据临床规范测评医学大模型。"
+              : "Evaluated by practicing clinicians. Tested against clinical standards."}
           </p>
         </div>
 
@@ -663,11 +663,11 @@ function LeftPanel() {
           {(isZh ? [
             "医生直接评判模型输出",
             "量表辅助成对比较",
-            "中美临床规范跨辖区分析",
+            "基于临床规范的安全分析",
           ] : [
             "Clinicians evaluate model outputs directly",
             "Rubric-augmented pairwise comparison",
-            "Cross-jurisdictional US–China analysis",
+            "Clinical standards-based safety analysis",
           ]).map((item) => (
             <li key={item} className="flex items-start gap-3 text-sm leading-6 text-white/70">
               <span className="mt-1 block h-1.5 w-1.5 flex-shrink-0 bg-white/50" />
@@ -678,13 +678,10 @@ function LeftPanel() {
 
         <div className="border-t border-white/20 pt-5">
           <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/40">
-            {isZh ? "项目合作" : "Collaboration"}
+            {isZh ? "所属机构" : "Affiliation"}
           </p>
           <p className="mt-2 text-sm text-white/60">
             Johns Hopkins University — CSSE
-          </p>
-          <p className="text-sm text-white/60">
-            {isZh ? "南京大学人工智能学院" : "Nanjing University — School of AI"}
           </p>
         </div>
       </div>

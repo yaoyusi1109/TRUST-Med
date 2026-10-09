@@ -18,10 +18,15 @@ export default function Home() {
     setAuthed(true);
   }
 
+  function handleLogout() {
+    localStorage.removeItem(AUTH_KEY);
+    setAuthed(false);
+  }
+
   // Avoid flash before localStorage resolves
   if (authed === null) return null;
 
   if (!authed) return <LoginPage onAuth={handleAuth} />;
 
-  return <TrustMedWorkbench />;
+  return <TrustMedWorkbench onLogout={handleLogout} />;
 }

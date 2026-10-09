@@ -38,7 +38,7 @@ export const workbenchCopy = {
         "The map uses the `world-atlas` Natural Earth dataset bundled with the app. Leaflet handles interaction, but no external tile server or visitor tracking script is loaded.",
       signal: "Participation signal",
       signalBody:
-        "The goal is social proof for collaborators: after a physician or site agrees to participate, their cohort can be represented on the map as part of a growing US-China evaluation network.",
+        "After a physician or site agrees to participate, their cohort can be represented on the map as part of a growing clinical evaluation network.",
       balance: "Current demo balance",
       sites: "Highlighted sites"
     },
@@ -120,7 +120,7 @@ export const workbenchCopy = {
       affiliation: "Affiliation",
       positioning: "Positioning",
       positioningBody:
-        "TRUST-Med extends arena-style model comparison for medicine by combining clinician preference, rubric-based safety testing, and explicit US-China jurisdictional context in English and Chinese.",
+        "TRUST-Med extends arena-style model comparison for medicine by combining clinician preference, rubric-based safety testing, and clinical standards-based evaluation.",
       readMore: "Read full research context ->"
     },
     search: {
@@ -140,7 +140,7 @@ export const workbenchCopy = {
     },
     map: {
       eyebrow: "协作地图",
-      title: "基于同意的中美临床协作网络",
+      title: "基于同意的临床协作网络",
       intro:
         "该模块用于展示已同意参与研究的临床团队分布。它不是访问追踪器：底图、国家边界、站点标记和协作连线均在本地通过 Leaflet 渲染。",
       atlasTitle: "Natural Earth 临床协作地图",
@@ -155,7 +155,7 @@ export const workbenchCopy = {
         "地图使用随应用打包的 `world-atlas` Natural Earth 数据集。Leaflet 仅负责交互渲染，不加载外部瓦片服务器或访问统计脚本。",
       signal: "参与感设计",
       signalBody:
-        "当医生或机构同意参与研究后，其团队可以作为中美医学 AI 测评网络的一部分呈现在地图上，增强协作项目的真实感与归属感。",
+        "当医生或机构同意参与研究后，其团队可以作为医学 AI 测评网络的一部分呈现在地图上，展示临床研究参与情况。",
       balance: "当前演示分布",
       sites: "高亮站点"
     },
@@ -237,7 +237,7 @@ export const workbenchCopy = {
       affiliation: "团队归属",
       positioning: "研究定位",
       positioningBody:
-        "TRUST-Med 将 Arena 式模型成对比较扩展到医学场景，结合医生偏好、量表化安全测评，以及中美双语双语境下的临床规范比较。",
+        "TRUST-Med 将 Arena 式模型成对比较扩展到医学场景，结合医生偏好、量表化安全测评，以及基于临床规范的评估。",
       readMore: "查看完整研究背景 ->"
     },
     search: {
